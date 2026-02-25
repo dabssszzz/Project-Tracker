@@ -1,0 +1,155 @@
+@import './styles/utilities.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Shadcn/UI variables (existing) */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --primary-active: 222.2 47.4% 9%;
+    --primary-light: 222.2 47.4% 85%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+
+    /* OpsPortal gray scale */
+    --tw-gray-100: 249, 250, 251;
+    --tw-gray-200: 243, 244, 246;
+    --tw-gray-300: 229, 231, 235;
+    --tw-gray-400: 209, 213, 219;
+    --tw-gray-500: 156, 163, 175;
+    --tw-gray-600: 107, 114, 128;
+    --tw-gray-700: 75, 85, 99;
+    --tw-gray-800: 55, 65, 81;
+    --tw-gray-900: 31, 41, 55;
+
+    /* OpsPortal contextual colors */
+    --tw-brand: 99, 102, 241;
+    --tw-brand-active: 79, 70, 229;
+    --tw-brand-light: 224, 231, 255;
+
+    --tw-primary: 37, 99, 235;
+    --tw-primary-active: 29, 78, 216;
+    --tw-primary-light: 219, 234, 254;
+
+    --tw-success: 34, 197, 94;
+    --tw-success-active: 22, 163, 74;
+    --tw-success-light: 220, 252, 231;
+
+    --tw-info: 14, 165, 233;
+    --tw-info-active: 2, 132, 199;
+    --tw-info-light: 224, 242, 254;
+
+    --tw-danger: 239, 68, 68;
+    --tw-danger-active: 220, 38, 38;
+    --tw-danger-light: 254, 226, 226;
+
+    --tw-warning: 251, 191, 36;
+    --tw-warning-active: 245, 158, 11;
+    --tw-warning-light: 254, 249, 195;
+
+    --tw-dark: 17, 24, 39;
+    --tw-dark-active: 0, 0, 0;
+    --tw-dark-light: 55, 65, 81;
+
+    /* OpsPortal page background */
+    --tw-page-bg: 249, 250, 251;
+    --tw-page-bg-dark: 17, 24, 39;
+
+    /* OpsPortal sidebar width */
+    --tw-sidebar-width: 260px;
+  }
+
+  .dark {
+    /* Shadcn/UI variables (existing) */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary-active: 210 40% 95%;
+    --primary-light: 222.2 47.4% 20%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+
+    /* OpsPortal gray scale (dark mode) */
+    --tw-gray-100: 55, 65, 81;
+    --tw-gray-200: 75, 85, 99;
+    --tw-gray-300: 107, 114, 128;
+    --tw-gray-400: 156, 163, 175;
+    --tw-gray-500: 209, 213, 219;
+    --tw-gray-600: 229, 231, 235;
+    --tw-gray-700: 243, 244, 246;
+    --tw-gray-800: 249, 250, 251;
+    --tw-gray-900: 255, 255, 255;
+
+    /* OpsPortal contextual colors (dark mode - slightly adjusted) */
+    --tw-brand: 129, 140, 248;
+    --tw-brand-active: 99, 102, 241;
+    --tw-brand-light: 55, 48, 163;
+
+    --tw-primary: 59, 130, 246;
+    --tw-primary-active: 37, 99, 235;
+    --tw-primary-light: 30, 58, 138;
+
+    --tw-success: 74, 222, 128;
+    --tw-success-active: 34, 197, 94;
+    --tw-success-light: 20, 83, 45;
+
+    --tw-info: 56, 189, 248;
+    --tw-info-active: 14, 165, 233;
+    --tw-info-light: 12, 74, 110;
+
+    --tw-danger: 248, 113, 113;
+    --tw-danger-active: 239, 68, 68;
+    --tw-danger-light: 127, 29, 29;
+
+    --tw-warning: 253, 224, 71;
+    --tw-warning-active: 251, 191, 36;
+    --tw-warning-light: 113, 63, 18;
+
+    --tw-dark: 229, 231, 235;
+    --tw-dark-active: 209, 213, 219;
+    --tw-dark-light: 107, 114, 128;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: Inter, system-ui, sans-serif;
+  }
+}
