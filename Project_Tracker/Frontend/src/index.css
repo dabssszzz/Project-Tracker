@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+@theme {
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-active: hsl(var(--primary-active));
+  --color-primary-light: hsl(var(--primary-light));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-gray-100: rgb(var(--tw-gray-100));
+  --color-gray-200: rgb(var(--tw-gray-200));
+  --color-gray-300: rgb(var(--tw-gray-300));
+  --color-gray-400: rgb(var(--tw-gray-400));
+  --color-gray-500: rgb(var(--tw-gray-500));
+  --color-gray-600: rgb(var(--tw-gray-600));
+  --color-gray-700: rgb(var(--tw-gray-700));
+  --color-gray-800: rgb(var(--tw-gray-800));
+  --color-gray-900: rgb(var(--tw-gray-900));
+
+  --color-brand: rgb(var(--tw-brand));
+  --color-brand-active: rgb(var(--tw-brand-active));
+  --color-brand-light: rgb(var(--tw-brand-light));
+
+  --color-success: rgb(var(--tw-success));
+  --color-success-active: rgb(var(--tw-success-active));
+  --color-success-light: rgb(var(--tw-success-light));
+
+  --color-warning: rgb(var(--tw-warning));
+  --color-warning-active: rgb(var(--tw-warning-active));
+  --color-warning-light: rgb(var(--tw-warning-light));
+
+  --color-danger: rgb(var(--tw-danger));
+  --color-danger-active: rgb(var(--tw-danger-active));
+  --color-danger-light: rgb(var(--tw-danger-light));
+
+  --color-info: rgb(var(--tw-info));
+  --color-info-active: rgb(var(--tw-info-active));
+  --color-info-light: rgb(var(--tw-info-light));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --primary-active: 222.2 47.4% 9%;
+    --primary-light: 222.2 47.4% 85%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+
+    --tw-gray-100: 249, 250, 251;
+    --tw-gray-200: 243, 244, 246;
+    --tw-gray-300: 229, 231, 235;
+    --tw-gray-400: 209, 213, 219;
+    --tw-gray-500: 156, 163, 175;
+    --tw-gray-600: 107, 114, 128;
+    --tw-gray-700: 75, 85, 99;
+    --tw-gray-800: 55, 65, 81;
+    --tw-gray-900: 31, 41, 55;
+
+    --tw-brand: 99, 102, 241;
+    --tw-brand-active: 79, 70, 229;
+    --tw-brand-light: 224, 231, 255;
+
+    --tw-success: 34, 197, 94;
+    --tw-success-active: 22, 163, 74;
+    --tw-success-light: 220, 252, 231;
+
+    --tw-info: 14, 165, 233;
+    --tw-info-active: 2, 132, 199;
+    --tw-info-light: 224, 242, 254;
+
+    --tw-danger: 239, 68, 68;
+    --tw-danger-active: 220, 38, 38;
+    --tw-danger-light: 254, 226, 226;
+
+    --tw-warning: 251, 191, 36;
+    --tw-warning-active: 245, 158, 11;
+    --tw-warning-light: 254, 249, 195;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border) / 1);
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: Inter, system-ui, sans-serif;
+  }
+}
