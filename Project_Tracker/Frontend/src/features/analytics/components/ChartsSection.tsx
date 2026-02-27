@@ -92,9 +92,9 @@ const completionTrendData = [
 export function ChartsSection({ metrics = {} }: { metrics?: any }) {
   // Map API data to charts
   const statusChartData = metrics.tasksByStatus?.length > 0 ? metrics.tasksByStatus.map((s: any) => ({
-    status: s.status,
-    count: s.count,
-    color: s.status === 'Done' ? '#10B981' : s.status === 'Review' ? '#3B82F6' : '#E10600'
+    status: s.name,
+    count: s.value,
+    color: s.name === 'Done' ? '#10B981' : s.name === 'Review' ? '#3B82F6' : '#E10600'
   })) : tasksByStatusData;
 
   const distributionChartData = metrics.projectProgress?.length > 0 ? metrics.projectProgress.map((p: any) => ({
@@ -104,10 +104,18 @@ export function ChartsSection({ metrics = {} }: { metrics?: any }) {
   })) : projectDistributionData;
 
   const assigneeData = metrics.tasksByAssignee?.length > 0 ? metrics.tasksByAssignee.map((a: any) => ({
-    name: a.assignee,
-    value: a.count,
+    name: a.name,
+    value: a.value,
     color: '#E10600'
   })) : assigneeSubtaskData;
+
+  const displayStackedData = metrics.tasksByAssigneeProject?.length > 0
+    ? metrics.tasksByAssigneeProject
+    : stackedBarData;
+
+  const displayTrendData = metrics.completionTrend?.length > 0
+    ? metrics.completionTrend
+    : completionTrendData;
   return (
     <div className="space-y-6">
       {/* First Row: 3 Donut Charts - Responsive: Stack on mobile, 2 per row on tablet, 3 on desktop */}
@@ -219,7 +227,7 @@ export function ChartsSection({ metrics = {} }: { metrics?: any }) {
             Subtasks by Assignee & Project
           </h3>
           <ResponsiveContainer width="100%" height={320}>
-            <BarChart data={stackedBarData}>
+            <BarChart data={displayStackedData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
               <XAxis dataKey="assignee" stroke="#9CA3AF" />
               <YAxis stroke="#9CA3AF" />
@@ -239,7 +247,7 @@ export function ChartsSection({ metrics = {} }: { metrics?: any }) {
             Project Completion Trend
           </h3>
           <ResponsiveContainer width="100%" height={320}>
-            <AreaChart data={completionTrendData}>
+            <AreaChart data={displayTrendData}>
               <defs>
                 <linearGradient id="colorCompleted" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#E10600" stopOpacity={0.3} />

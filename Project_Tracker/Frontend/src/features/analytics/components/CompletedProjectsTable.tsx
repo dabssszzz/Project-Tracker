@@ -9,6 +9,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '../../../shared/ui/pagination';
+import { useState, useMemo } from 'react';
+import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 
 interface CompletedProject {
   id: string;
@@ -23,78 +25,74 @@ interface CompletedProject {
   duration: string;
 }
 
-const completedProjects: CompletedProject[] = [
-  {
-    id: 'PRJ-003',
-    project: 'Brand Guidelines',
-    category: 'Branding',
-    assignee: {
-      name: 'Emily Parker',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
-      initials: 'EP',
-    },
-    completedDate: 'Feb 20, 2026',
-    duration: '19 days',
-  },
-  {
-    id: 'PRJ-007',
-    project: 'Customer Survey',
-    category: 'Research',
-    assignee: {
-      name: 'Michael Rodriguez',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
-      initials: 'MR',
-    },
-    completedDate: 'Feb 22, 2026',
-    duration: '17 days',
-  },
-  {
-    id: 'PRJ-011',
-    project: 'Social Media Calendar',
-    category: 'Social Media',
-    assignee: {
-      name: 'Sarah Chen',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-      initials: 'SC',
-    },
-    completedDate: 'Feb 18, 2026',
-    duration: '12 days',
-  },
-  {
-    id: 'PRJ-014',
-    project: 'Product Launch Plan',
-    category: 'Marketing',
-    assignee: {
-      name: 'James Wilson',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James',
-      initials: 'JW',
-    },
-    completedDate: 'Feb 25, 2026',
-    duration: '21 days',
-  },
-];
 
 export function CompletedProjectsTable({ projects = [] }: { projects?: any[] }) {
-  const computedProjects = projects
-    .filter((p) => !p.isActive)
-    .map((p) => ({
-      id: `PRJ-${String(p.id).padStart(3, '0')}`,
-      project: p.name,
-      category: 'General',
-      assignee: {
-        name: 'Unassigned',
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${p.id}`,
-        initials: 'UA',
-      },
-      completedDate: new Date(p.createdDate).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      }),
-      duration: 'N/A',
-    }));
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
 
-  const displayProjects = computedProjects.length > 0 ? computedProjects : completedProjects;
+  const computedProjects = useMemo(() => {
+    return projects
+      .filter((p) => !p.isActive)
+      .map((p) => ({
+        id: `PRJ-${String(p.id).padStart(3, '0')}`,
+        project: p.name,
+        category: 'General',
+        assignee: {
+          name: 'Unassigned',
+          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${p.id}`,
+          initials: 'UA',
+        },
+        completedDate: new Date(p.createdDate).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        }),
+        duration: 'N/A',
+      }));
+  }, [projects]);
+
+  const sortedProjects = useMemo(() => {
+    const list = [...computedProjects];
+    if (sortConfig !== null) {
+      list.sort((a: any, b: any) => {
+        let aValue = a[sortConfig.key];
+        let bValue = b[sortConfig.key];
+
+        // Handle nested assignee name
+        if (sortConfig.key === 'assignee') {
+          aValue = a.assignee.name;
+          bValue = b.assignee.name;
+        }
+
+        if (aValue < bValue) {
+          return sortConfig.direction === 'asc' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return list;
+  }, [computedProjects, sortConfig]);
+
+  const handleSort = (key: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getSortIcon = (key: string) => {
+    if (!sortConfig || sortConfig.key !== key) {
+      return <ArrowUpDown className="ml-2 h-3 w-3" />;
+    }
+    return sortConfig.direction === 'asc' ? (
+      <ArrowUp className="ml-2 h-3 w-3 text-red-600" />
+    ) : (
+      <ArrowDown className="ml-2 h-3 w-3 text-red-600" />
+    );
+  };
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100">
       <div className="px-6 py-5 border-b border-gray-100">
@@ -107,23 +105,59 @@ export function CompletedProjectsTable({ projects = [] }: { projects?: any[] }) 
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr className="border-b border-gray-200">
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Project ID
+              <th
+                className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => handleSort('id')}
+              >
+                <div className="flex items-center">
+                  Project ID
+                  {getSortIcon('id')}
+                </div>
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Project Name
+              <th
+                className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => handleSort('project')}
+              >
+                <div className="flex items-center">
+                  Project Name
+                  {getSortIcon('project')}
+                </div>
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Category
+              <th
+                className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => handleSort('category')}
+              >
+                <div className="flex items-center">
+                  Category
+                  {getSortIcon('category')}
+                </div>
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Assignee
+              <th
+                className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => handleSort('assignee')}
+              >
+                <div className="flex items-center">
+                  Assignee
+                  {getSortIcon('assignee')}
+                </div>
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Completed Date
+              <th
+                className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => handleSort('completedDate')}
+              >
+                <div className="flex items-center">
+                  Completed Date
+                  {getSortIcon('completedDate')}
+                </div>
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Duration
+              <th
+                className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => handleSort('duration')}
+              >
+                <div className="flex items-center">
+                  Duration
+                  {getSortIcon('duration')}
+                </div>
               </th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Status
@@ -131,7 +165,7 @@ export function CompletedProjectsTable({ projects = [] }: { projects?: any[] }) 
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {displayProjects.map((project, index) => (
+            {sortedProjects.map((project, index) => (
               <tr
                 key={project.id}
                 className={`hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
@@ -185,8 +219,8 @@ export function CompletedProjectsTable({ projects = [] }: { projects?: any[] }) 
         <div className="flex items-center justify-between">
           <div className="text-sm text-gray-600">
             Showing <span className="font-medium">1</span> to{' '}
-            <span className="font-medium">4</span> of{' '}
-            <span className="font-medium">12</span> results
+            <span className="font-medium">{sortedProjects.length}</span> of{' '}
+            <span className="font-medium">{sortedProjects.length}</span> results
           </div>
           <Pagination>
             <PaginationContent>

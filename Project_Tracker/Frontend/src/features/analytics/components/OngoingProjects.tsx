@@ -8,6 +8,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '../../../shared/ui/pagination';
+import { useState, useMemo } from 'react';
+import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 
 interface OngoingProject {
   id: string;
@@ -23,70 +25,75 @@ interface OngoingProject {
   status: string;
 }
 
-const fallbackOngoingProjects: OngoingProject[] = [
-  {
-    id: 'PRJ-015',
-    project: 'Website Redesign',
-    category: 'Web Development',
-    assignee: {
-      name: 'Olivia Martinez',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Olivia',
-      initials: 'OM',
-    },
-    dueDate: 'Mar 15, 2026',
-    duration: '45 days',
-    status: 'In Progress'
-  },
-  {
-    id: 'PRJ-016',
-    project: 'SEO Optimization',
-    category: 'Marketing',
-    assignee: {
-      name: 'Sarah Chen',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-      initials: 'SC',
-    },
-    dueDate: 'Mar 10, 2026',
-    duration: '30 days',
-    status: 'Review'
-  },
-  {
-    id: 'PRJ-018',
-    project: 'Q2 Content Strategy',
-    category: 'Content',
-    assignee: {
-      name: 'James Wilson',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James',
-      initials: 'JW',
-    },
-    dueDate: 'Apr 02, 2026',
-    duration: '60 days',
-    status: 'In Progress'
-  },
-];
 
 export function OngoingProjects({ projects = [] }: { projects?: any[] }) {
-  const computedProjects = projects
-    .filter((p) => p.isActive)
-    .map((p) => ({
-      id: `PRJ-${String(p.id).padStart(3, '0')}`,
-      project: p.name,
-      category: 'General',
-      assignee: {
-        name: 'Unassigned',
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${p.id}`,
-        initials: 'UA',
-      },
-      dueDate: new Date(p.createdDate).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      }),
-      duration: 'Ongoing',
-      status: 'In Progress'
-    }));
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
 
-  const displayProjects = computedProjects.length > 0 ? computedProjects : fallbackOngoingProjects;
+  const computedProjects = useMemo(() => {
+    return projects
+      .filter((p) => p.isActive)
+      .map((p) => ({
+        id: `PRJ-${String(p.id).padStart(3, '0')}`,
+        project: p.name,
+        category: 'General',
+        assignee: {
+          name: 'Unassigned',
+          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${p.id}`,
+          initials: 'UA',
+        },
+        dueDate: new Date(p.createdDate).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        }),
+        duration: 'Ongoing',
+        status: 'In Progress'
+      }));
+  }, [projects]);
+
+  const sortedProjects = useMemo(() => {
+    const list = [...computedProjects];
+    if (sortConfig !== null) {
+      list.sort((a: any, b: any) => {
+        let aValue = a[sortConfig.key];
+        let bValue = b[sortConfig.key];
+
+        // Handle nested assignee name
+        if (sortConfig.key === 'assignee') {
+          aValue = a.assignee.name;
+          bValue = b.assignee.name;
+        }
+
+        if (aValue < bValue) {
+          return sortConfig.direction === 'asc' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return list;
+  }, [computedProjects, sortConfig]);
+
+  const handleSort = (key: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getSortIcon = (key: string) => {
+    if (!sortConfig || sortConfig.key !== key) {
+      return <ArrowUpDown className="ml-2 h-3 w-3 text-gray-400" />;
+    }
+    return sortConfig.direction === 'asc' ? (
+      <ArrowUp className="ml-2 h-3 w-3 text-red-600" />
+    ) : (
+      <ArrowDown className="ml-2 h-3 w-3 text-red-600" />
+    );
+  };
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100">
@@ -100,31 +107,73 @@ export function OngoingProjects({ projects = [] }: { projects?: any[] }) {
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr className="border-b border-gray-200">
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Project ID
+              <th
+                className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => handleSort('id')}
+              >
+                <div className="flex items-center">
+                  Project ID
+                  {getSortIcon('id')}
+                </div>
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Project Name
+              <th
+                className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => handleSort('project')}
+              >
+                <div className="flex items-center">
+                  Project Name
+                  {getSortIcon('project')}
+                </div>
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Category
+              <th
+                className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => handleSort('category')}
+              >
+                <div className="flex items-center">
+                  Category
+                  {getSortIcon('category')}
+                </div>
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Assignee
+              <th
+                className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => handleSort('assignee')}
+              >
+                <div className="flex items-center">
+                  Assignee
+                  {getSortIcon('assignee')}
+                </div>
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Due Date
+              <th
+                className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => handleSort('dueDate')}
+              >
+                <div className="flex items-center">
+                  Due Date
+                  {getSortIcon('dueDate')}
+                </div>
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Duration
+              <th
+                className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => handleSort('duration')}
+              >
+                <div className="flex items-center">
+                  Duration
+                  {getSortIcon('duration')}
+                </div>
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Status
+              <th
+                className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => handleSort('status')}
+              >
+                <div className="flex items-center">
+                  Status
+                  {getSortIcon('status')}
+                </div>
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {displayProjects.map((project, index) => (
+            {sortedProjects.map((project, index) => (
               <tr
                 key={project.id}
                 className={`hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
@@ -178,8 +227,8 @@ export function OngoingProjects({ projects = [] }: { projects?: any[] }) {
         <div className="flex items-center justify-between">
           <div className="text-sm text-gray-600">
             Showing <span className="font-medium">1</span> to{' '}
-            <span className="font-medium">{displayProjects.length}</span> of{' '}
-            <span className="font-medium">{displayProjects.length}</span> results
+            <span className="font-medium">{sortedProjects.length}</span> of{' '}
+            <span className="font-medium">{sortedProjects.length}</span> results
           </div>
           <Pagination>
             <PaginationContent>
