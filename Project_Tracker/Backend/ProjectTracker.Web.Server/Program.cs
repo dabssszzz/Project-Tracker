@@ -27,6 +27,7 @@ builder.Services.AddScoped<IProjectService,     ProjectService>();
 builder.Services.AddScoped<ICategoryService,    CategoryService>();
 builder.Services.AddScoped<IMainTaskService,    MainTaskService>();
 builder.Services.AddScoped<IProjectTaskService, ProjectTaskService>();
+builder.Services.AddScoped<IAnalyticsService,   AnalyticsService>();
 
 // ── Unit of Work ────────────────────────────────────────────
 builder.Services.AddScoped<IProjectTrackerUnitOfWork, ProjectTrackerUnitOfWork>();

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.js",
+    "css": "src/index.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "src",
+    "utils": "src/shared/ui/utils",
+    "ui": "src/shared/ui"
+  },
+  "registries": {
+    "@reui": "https://reui.io/r/{style}/{name}.json"
+  }
+}
