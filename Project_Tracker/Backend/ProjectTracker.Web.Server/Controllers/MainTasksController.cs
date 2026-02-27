@@ -6,17 +6,13 @@ namespace ProjectTracker.Web.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class MainTasksController : BaseController
+public class MainTasksController(IMainTaskService service, ILogger<MainTasksController> logger)
+    : BaseController(logger)
 {
-    private readonly IMainTaskService _service;
-
-    public MainTasksController(IMainTaskService service, ILogger<MainTasksController> logger) : base(logger)
-        => _service = service;
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        try { return Success(await _service.GetAllAsync()); }
+        try { return Success(await service.GetAllAsync()); }
         catch (Exception ex) { return HandleError(ex, "Failed to get main tasks"); }
     }
 
@@ -25,7 +21,7 @@ public class MainTasksController : BaseController
     {
         try
         {
-            var data = await _service.GetByIdAsync(id);
+            var data = await service.GetByIdAsync(id);
             return data == null ? NotFoundError($"MainTask {id} not found") : Success(data);
         }
         catch (Exception ex) { return HandleError(ex, $"Failed to get main task {id}"); }
@@ -37,8 +33,8 @@ public class MainTasksController : BaseController
         try
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var id = await _service.CreateAsync(dto);
-            return Success(new { id }, "Main task created successfully");
+            var id = await service.CreateAsync(dto);
+            return Success(new { id }, "MainTask created");
         }
         catch (Exception ex) { return HandleError(ex, "Failed to create main task"); }
     }
@@ -50,8 +46,8 @@ public class MainTasksController : BaseController
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             if (id != dto.Id) return BadRequest(new { error = "ID mismatch" });
-            await _service.UpdateAsync(dto);
-            return Success(dto, "Main task updated successfully");
+            await service.UpdateAsync(dto);
+            return Success(dto, "MainTask updated");
         }
         catch (InvalidOperationException ex) { return NotFoundError(ex.Message); }
         catch (Exception ex) { return HandleError(ex, $"Failed to update main task {id}"); }
@@ -60,7 +56,7 @@ public class MainTasksController : BaseController
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        try { await _service.DeleteAsync(id); return Success(new { id }, "Main task deleted"); }
+        try { await service.DeleteAsync(id); return Success(new { id }, "MainTask deleted"); }
         catch (Exception ex) { return HandleError(ex, $"Failed to delete main task {id}"); }
     }
 }

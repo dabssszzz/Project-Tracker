@@ -7,10 +7,12 @@ namespace ProjectTracker.Web.Server.Persistence.DbContext;
 public class ProjectTrackerDbContext(DbContextOptions<ProjectTrackerDbContext> options)
     : Microsoft.EntityFrameworkCore.DbContext(options), IProjectTrackerDbContext
 {
-    public DbSet<ProjectEntity> Projects { get; set; }
-    public DbSet<CategoryEntity> Categories { get; set; }
-    public DbSet<MainTaskEntity> MainTasks { get; set; }
-    public DbSet<ProjectTaskEntity> ProjectTasks { get; set; }
+    public DbSet<ProjectEntity>         Projects          { get; set; }
+    public DbSet<CategoryEntity>        Categories        { get; set; }
+    public DbSet<MainTaskEntity>        MainTasks         { get; set; }
+    public DbSet<SubtaskEntity>         Subtasks          { get; set; }
+    public DbSet<SubtaskCategoryEntity> SubtaskCategories { get; set; }
+    public DbSet<AssigneeEntity>        Assignees         { get; set; }
 
     public new async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         => await base.SaveChangesAsync(cancellationToken);

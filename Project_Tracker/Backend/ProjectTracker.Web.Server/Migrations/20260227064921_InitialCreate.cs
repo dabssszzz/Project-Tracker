@@ -12,21 +12,22 @@ namespace ProjectTracker.Web.Server.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "MainTasks",
+                name: "Assignees",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MainTasks", x => x.Id);
+                    table.PrimaryKey("PK_Assignees", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -40,7 +41,7 @@ namespace ProjectTracker.Web.Server.Migrations
                     ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -59,7 +60,7 @@ namespace ProjectTracker.Web.Server.Migrations
                     ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -69,52 +70,89 @@ namespace ProjectTracker.Web.Server.Migrations
                         column: x => x.ProjectId,
                         principalTable: "Projects",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProjectTasks",
+                name: "MainTasks",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TaskCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    ProjectId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
-                    MainTaskId = table.Column<int>(type: "int", nullable: false),
-                    Subtask = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    SubtaskCategories = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
-                    Details = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Assignee = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    CompletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectTasks", x => x.Id);
+                    table.PrimaryKey("PK_MainTasks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProjectTasks_Categories_CategoryId",
+                        name: "FK_MainTasks_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Subtasks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    MainTaskId = table.Column<int>(type: "int", nullable: false),
+                    AssigneeId = table.Column<int>(type: "int", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Subtasks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProjectTasks_MainTasks_MainTaskId",
+                        name: "FK_Subtasks_Assignees_AssigneeId",
+                        column: x => x.AssigneeId,
+                        principalTable: "Assignees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Subtasks_MainTasks_MainTaskId",
                         column: x => x.MainTaskId,
                         principalTable: "MainTasks",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SubtaskCategories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    SubtaskId = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubtaskCategories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProjectTasks_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        name: "FK_SubtaskCategories_Subtasks_SubtaskId",
+                        column: x => x.SubtaskId,
+                        principalTable: "Subtasks",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -123,32 +161,43 @@ namespace ProjectTracker.Web.Server.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectTasks_CategoryId",
-                table: "ProjectTasks",
+                name: "IX_MainTasks_CategoryId",
+                table: "MainTasks",
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectTasks_MainTaskId",
-                table: "ProjectTasks",
-                column: "MainTaskId");
+                name: "IX_SubtaskCategories_SubtaskId",
+                table: "SubtaskCategories",
+                column: "SubtaskId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectTasks_ProjectId",
-                table: "ProjectTasks",
-                column: "ProjectId");
+                name: "IX_Subtasks_AssigneeId",
+                table: "Subtasks",
+                column: "AssigneeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subtasks_MainTaskId",
+                table: "Subtasks",
+                column: "MainTaskId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ProjectTasks");
+                name: "SubtaskCategories");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "Subtasks");
+
+            migrationBuilder.DropTable(
+                name: "Assignees");
 
             migrationBuilder.DropTable(
                 name: "MainTasks");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "Projects");

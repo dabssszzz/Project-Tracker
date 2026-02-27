@@ -11,35 +11,38 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ── Database ────────────────────────────────────────────────
+// ── Database ─────────────────────────────────────────────────
 builder.Services.AddDbContext<ProjectTrackerDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IProjectTrackerDbContext, ProjectTrackerDbContext>();
 
-// ── Repositories ────────────────────────────────────────────
-builder.Services.AddScoped<IProjectRepository,     ProjectRepository>();
-builder.Services.AddScoped<ICategoryRepository,    CategoryRepository>();
-builder.Services.AddScoped<IMainTaskRepository,    MainTaskRepository>();
-builder.Services.AddScoped<IProjectTaskRepository, ProjectTaskRepository>();
+// ── Repositories ─────────────────────────────────────────────
+builder.Services.AddScoped<IProjectRepository,         ProjectRepository>();
+builder.Services.AddScoped<ICategoryRepository,        CategoryRepository>();
+builder.Services.AddScoped<IMainTaskRepository,        MainTaskRepository>();
+builder.Services.AddScoped<ISubtaskRepository,         SubtaskRepository>();
+builder.Services.AddScoped<ISubtaskCategoryRepository, SubtaskCategoryRepository>();
+builder.Services.AddScoped<IAssigneeRepository,        AssigneeRepository>();
 
-// ── Services ────────────────────────────────────────────────
-builder.Services.AddScoped<IProjectService,     ProjectService>();
-builder.Services.AddScoped<ICategoryService,    CategoryService>();
-builder.Services.AddScoped<IMainTaskService,    MainTaskService>();
-builder.Services.AddScoped<IProjectTaskService, ProjectTaskService>();
-builder.Services.AddScoped<IAnalyticsService,   AnalyticsService>();
+// ── Services ──────────────────────────────────────────────────
+builder.Services.AddScoped<IProjectService,         ProjectService>();
+builder.Services.AddScoped<ICategoryService,        CategoryService>();
+builder.Services.AddScoped<IMainTaskService,        MainTaskService>();
+builder.Services.AddScoped<ISubtaskService,         SubtaskService>();
+builder.Services.AddScoped<ISubtaskCategoryService, SubtaskCategoryService>();
+builder.Services.AddScoped<IAssigneeService,        AssigneeService>();
 
-// ── Unit of Work ────────────────────────────────────────────
+// ── Unit of Work ─────────────────────────────────────────────
 builder.Services.AddScoped<IProjectTrackerUnitOfWork, ProjectTrackerUnitOfWork>();
 
-// ── JSON ────────────────────────────────────────────────────
+// ── JSON ──────────────────────────────────────────────────────
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 
-// ── CORS ────────────────────────────────────────────────────
+// ── CORS ──────────────────────────────────────────────────────
 const string CorsPolicy = "AllowFrontend";
 builder.Services.AddCors(options =>
 {
@@ -50,13 +53,13 @@ builder.Services.AddCors(options =>
         .AllowCredentials());
 });
 
-// ── Swagger ──────────────────────────────────────────────────
+// ── Swagger ───────────────────────────────────────────────────
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// ── Seed Data ────────────────────────────────────────────────
+// ── Migrate DB ────────────────────────────────────────────────
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ProjectTrackerDbContext>();
@@ -70,7 +73,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection(); // Removed to allow local HTTP requests without SSL errors
 app.UseCors(CorsPolicy);
 app.UseAuthorization();
 app.MapControllers();

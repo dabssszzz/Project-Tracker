@@ -6,17 +6,13 @@ namespace ProjectTracker.Web.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProjectsController : BaseController
+public class ProjectsController(IProjectService service, ILogger<ProjectsController> logger)
+    : BaseController(logger)
 {
-    private readonly IProjectService _service;
-
-    public ProjectsController(IProjectService service, ILogger<ProjectsController> logger) : base(logger)
-        => _service = service;
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        try { return Success(await _service.GetAllAsync()); }
+        try { return Success(await service.GetAllAsync()); }
         catch (Exception ex) { return HandleError(ex, "Failed to get projects"); }
     }
 
@@ -25,7 +21,7 @@ public class ProjectsController : BaseController
     {
         try
         {
-            var data = await _service.GetByIdAsync(id);
+            var data = await service.GetByIdAsync(id);
             return data == null ? NotFoundError($"Project {id} not found") : Success(data);
         }
         catch (Exception ex) { return HandleError(ex, $"Failed to get project {id}"); }
@@ -37,8 +33,8 @@ public class ProjectsController : BaseController
         try
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var id = await _service.CreateAsync(dto);
-            return Success(new { id }, "Project created successfully");
+            var id = await service.CreateAsync(dto);
+            return Success(new { id }, "Project created");
         }
         catch (Exception ex) { return HandleError(ex, "Failed to create project"); }
     }
@@ -50,8 +46,8 @@ public class ProjectsController : BaseController
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             if (id != dto.Id) return BadRequest(new { error = "ID mismatch" });
-            await _service.UpdateAsync(dto);
-            return Success(dto, "Project updated successfully");
+            await service.UpdateAsync(dto);
+            return Success(dto, "Project updated");
         }
         catch (InvalidOperationException ex) { return NotFoundError(ex.Message); }
         catch (Exception ex) { return HandleError(ex, $"Failed to update project {id}"); }
@@ -60,7 +56,7 @@ public class ProjectsController : BaseController
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        try { await _service.DeleteAsync(id); return Success(new { id }, "Project deleted successfully"); }
+        try { await service.DeleteAsync(id); return Success(new { id }, "Project deleted"); }
         catch (Exception ex) { return HandleError(ex, $"Failed to delete project {id}"); }
     }
 }
