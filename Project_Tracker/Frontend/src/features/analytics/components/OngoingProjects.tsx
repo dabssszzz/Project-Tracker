@@ -1,29 +1,92 @@
-import { FolderOpen, Plus } from 'lucide-react';
-import { Button } from '../../../shared/ui/button';
+import { Badge } from '../../../shared/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '../../../shared/ui/avatar';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '../../../shared/ui/pagination';
+
+interface OngoingProject {
+  id: string;
+  project: string;
+  category: string;
+  assignee: {
+    name: string;
+    avatar: string;
+    initials: string;
+  };
+  dueDate: string;
+  duration: string;
+  status: string;
+}
+
+const fallbackOngoingProjects: OngoingProject[] = [
+  {
+    id: 'PRJ-015',
+    project: 'Website Redesign',
+    category: 'Web Development',
+    assignee: {
+      name: 'Olivia Martinez',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Olivia',
+      initials: 'OM',
+    },
+    dueDate: 'Mar 15, 2026',
+    duration: '45 days',
+    status: 'In Progress'
+  },
+  {
+    id: 'PRJ-016',
+    project: 'SEO Optimization',
+    category: 'Marketing',
+    assignee: {
+      name: 'Sarah Chen',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+      initials: 'SC',
+    },
+    dueDate: 'Mar 10, 2026',
+    duration: '30 days',
+    status: 'Review'
+  },
+  {
+    id: 'PRJ-018',
+    project: 'Q2 Content Strategy',
+    category: 'Content',
+    assignee: {
+      name: 'James Wilson',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James',
+      initials: 'JW',
+    },
+    dueDate: 'Apr 02, 2026',
+    duration: '60 days',
+    status: 'In Progress'
+  },
+];
 
 export function OngoingProjects({ projects = [] }: { projects?: any[] }) {
-  const ongoingProjectsList = projects.filter((p) => p.isActive);
+  const computedProjects = projects
+    .filter((p) => p.isActive)
+    .map((p) => ({
+      id: `PRJ-${String(p.id).padStart(3, '0')}`,
+      project: p.name,
+      category: 'General',
+      assignee: {
+        name: 'Unassigned',
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${p.id}`,
+        initials: 'UA',
+      },
+      dueDate: new Date(p.createdDate).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      }),
+      duration: 'Ongoing',
+      status: 'In Progress'
+    }));
 
-  if (ongoingProjectsList.length > 0) {
-    return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-        <div className="px-6 py-5 border-b border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900">Ongoing Projects</h3>
-          <p className="text-sm text-gray-500 mt-1">Projects currently in progress</p>
-        </div>
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {ongoingProjectsList.map((project) => (
-              <div key={project.id} className="p-4 border border-gray-100 rounded-lg hover:shadow-sm transition-shadow">
-                <h4 className="font-semibold text-gray-900 mb-1">{project.name}</h4>
-                <p className="text-sm text-gray-500">Created: {new Date(project.createdDate).toLocaleDateString()}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const displayProjects = computedProjects.length > 0 ? computedProjects : fallbackOngoingProjects;
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100">
@@ -32,27 +95,108 @@ export function OngoingProjects({ projects = [] }: { projects?: any[] }) {
         <p className="text-sm text-gray-500 mt-1">Projects currently in progress</p>
       </div>
 
-      {/* Empty State */}
-      <div className="flex flex-col items-center justify-center py-16 px-6">
-        <div
-          className="w-20 h-20 rounded-full flex items-center justify-center mb-6"
-          style={{ backgroundColor: '#FEE2E2' }}
-        >
-          <FolderOpen className="h-10 w-10" style={{ color: '#E10600' }} />
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-gray-50">
+            <tr className="border-b border-gray-200">
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Project ID
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Project Name
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Category
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Assignee
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Due Date
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Duration
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Status
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {displayProjects.map((project, index) => (
+              <tr
+                key={project.id}
+                className={`hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
+                  }`}
+              >
+                <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                  {project.id}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-900">
+                  {project.project}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-600">
+                  {project.category}
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={project.assignee.avatar} />
+                      <AvatarFallback>{project.assignee.initials}</AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm text-gray-900">
+                      {project.assignee.name}
+                    </span>
+                  </div>
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-600">
+                  {project.dueDate}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-600">
+                  {project.duration}
+                </td>
+                <td className="px-6 py-4">
+                  <Badge
+                    className="font-medium hover:opacity-100 cursor-default shadow-none border-0"
+                    style={{
+                      color: project.status === 'Review' ? '#B45309' : '#B91C1C',
+                      backgroundColor: project.status === 'Review' ? '#FEF3C7' : '#FEE2E2',
+                    }}
+                  >
+                    {project.status}
+                  </Badge>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination */}
+      <div className="border-t border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-gray-600">
+            Showing <span className="font-medium">1</span> to{' '}
+            <span className="font-medium">{displayProjects.length}</span> of{' '}
+            <span className="font-medium">{displayProjects.length}</span> results
+          </div>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious href="#" />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href="#" isActive>
+                  1
+                </PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext href="#" />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
-        <h4 className="text-lg font-semibold text-gray-900 mb-2">
-          No ongoing projects
-        </h4>
-        <p className="text-sm text-gray-500 mb-6 text-center max-w-md">
-          All projects have been completed. Start a new project to track progress and analytics.
-        </p>
-        <Button
-          className="text-white hover:opacity-90"
-          style={{ backgroundColor: '#E10600' }}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add New Project
-        </Button>
       </div>
     </div>
   );

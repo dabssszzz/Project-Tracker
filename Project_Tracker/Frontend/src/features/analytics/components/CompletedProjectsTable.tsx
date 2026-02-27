@@ -75,7 +75,7 @@ const completedProjects: CompletedProject[] = [
 ];
 
 export function CompletedProjectsTable({ projects = [] }: { projects?: any[] }) {
-  const completedProjects = projects
+  const computedProjects = projects
     .filter((p) => !p.isActive)
     .map((p) => ({
       id: `PRJ-${String(p.id).padStart(3, '0')}`,
@@ -94,7 +94,7 @@ export function CompletedProjectsTable({ projects = [] }: { projects?: any[] }) 
       duration: 'N/A',
     }));
 
-  if (completedProjects.length === 0) return null;
+  const displayProjects = computedProjects.length > 0 ? computedProjects : completedProjects;
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100">
       <div className="px-6 py-5 border-b border-gray-100">
@@ -131,7 +131,7 @@ export function CompletedProjectsTable({ projects = [] }: { projects?: any[] }) 
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {completedProjects.map((project, index) => (
+            {displayProjects.map((project, index) => (
               <tr
                 key={project.id}
                 className={`hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'

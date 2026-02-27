@@ -167,22 +167,22 @@ export function ExecutiveDashboardView() {
   ];
 
   // Map API data to charts
-  const statusChartData = metrics.tasksByStatus?.map(s => ({
+  const statusChartData = metrics.tasksByStatus?.length > 0 ? metrics.tasksByStatus.map((s: any) => ({
     status: s.status,
     count: s.count,
     color: s.status === 'Done' ? '#10B981' : s.status === 'Review' ? '#F59E0B' : '#E10600'
-  })) || tasksByStatusData;
+  })) : tasksByStatusData;
 
-  const distributionChartData = metrics.projectProgress?.map(p => ({
+  const distributionChartData = metrics.projectProgress?.length > 0 ? metrics.projectProgress.map((p: any) => ({
     name: p.projectName,
     value: p.completionPercentage,
     color: '#E10600'
-  })) || projectDistributionData;
+  })) : projectDistributionData;
 
-  const workloads = metrics.tasksByAssignee?.map(a => ({
+  const workloads = metrics.tasksByAssignee?.length > 0 ? metrics.tasksByAssignee.map((a: any) => ({
     name: a.assignee,
     tasks: a.count
-  })) || workloadData;
+  })) : workloadData;
 
   return (
     <div className="px-4 sm:px-6 py-6 sm:py-8 max-w-[1600px] mx-auto space-y-6">

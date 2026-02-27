@@ -91,23 +91,23 @@ const completionTrendData = [
 
 export function ChartsSection({ metrics = {} }: { metrics?: any }) {
   // Map API data to charts
-  const statusChartData = metrics.tasksByStatus?.map((s: any) => ({
+  const statusChartData = metrics.tasksByStatus?.length > 0 ? metrics.tasksByStatus.map((s: any) => ({
     status: s.status,
     count: s.count,
     color: s.status === 'Done' ? '#10B981' : s.status === 'Review' ? '#3B82F6' : '#E10600'
-  })) || tasksByStatusData;
+  })) : tasksByStatusData;
 
-  const distributionChartData = metrics.projectProgress?.map((p: any) => ({
+  const distributionChartData = metrics.projectProgress?.length > 0 ? metrics.projectProgress.map((p: any) => ({
     name: p.projectName,
     value: p.completionPercentage,
     color: '#E10600'
-  })) || projectDistributionData;
+  })) : projectDistributionData;
 
-  const assigneeData = metrics.tasksByAssignee?.map((a: any) => ({
+  const assigneeData = metrics.tasksByAssignee?.length > 0 ? metrics.tasksByAssignee.map((a: any) => ({
     name: a.assignee,
     value: a.count,
     color: '#E10600'
-  })) || assigneeSubtaskData;
+  })) : assigneeSubtaskData;
   return (
     <div className="space-y-6">
       {/* First Row: 3 Donut Charts - Responsive: Stack on mobile, 2 per row on tablet, 3 on desktop */}
