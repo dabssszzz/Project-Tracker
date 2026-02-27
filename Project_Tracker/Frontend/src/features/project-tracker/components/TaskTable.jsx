@@ -55,10 +55,10 @@ const TaskTable = ({ tasks, onEdit, onStatusChange }) => {
                             <td className="px-3 py-3 text-xs text-gray-700 border border-gray-300">{task.categoryName}</td>
                             <td className="px-3 py-3 text-xs text-gray-700 border border-gray-300">{task.mainTaskName}</td>
                             <td className="px-3 py-3 text-xs text-gray-700 border border-gray-300 text-center">
-                                {task.subtask ? <span className="text-gray-500">{task.subtask}</span> : <span className="text-gray-400 font-medium">(proceed to details)</span>}
+                                {task.name ? <span className="text-gray-500">{task.name}</span> : <span className="text-gray-400 font-medium">(proceed to details)</span>}
                             </td>
                             <td className="px-3 py-3 text-xs text-gray-700 border border-gray-300 text-center">
-                                {task.subtaskCategories || '-'}
+                                {task.subtaskCategoryNames || '-'}
                             </td>
                             <td className="px-3 py-3 text-xs text-gray-700 border border-gray-300 relative group">
                                 <div className="flex items-center justify-between">
@@ -87,10 +87,10 @@ const TaskTable = ({ tasks, onEdit, onStatusChange }) => {
                                 </div>
                             </td>
                             <td className="px-3 py-3 text-xs text-gray-700 border border-gray-300">
-                                {task.assignee ? (
+                                {task.assigneeName ? (
                                     <div className="flex flex-col">
-                                        <span>{task.assignee.split(' ')[0]}</span>
-                                        <span>{task.assignee.split(' ').slice(1).join(' ')}</span>
+                                        <span>{task.assigneeName.split(' ')[0]}</span>
+                                        <span>{task.assigneeName.split(' ').slice(1).join(' ')}</span>
                                     </div>
                                 ) : '-'}
                             </td>
@@ -101,6 +101,7 @@ const TaskTable = ({ tasks, onEdit, onStatusChange }) => {
                                 {task.status === 'Done/Published' ? formatDate(task.modifiedDate || new Date().toISOString()) : '-'}
                             </td>
                         </tr>
+
                     ))}
                     {(!tasks || tasks.length === 0) && (
                         <tr>

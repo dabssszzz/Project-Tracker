@@ -4,70 +4,52 @@ import { Avatar, AvatarFallback, AvatarImage } from '../../shared/ui/avatar';
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from '../../shared/ui/pagination';
-import { Button } from '../../shared/ui/button';
-import { MobileProjectCard } from './MobileProjectCard';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../shared/ui/tooltip';
-import { useProjects } from '../../hooks/useProjects';
+import { useTasks } from '../project-tracker/hooks/useProjectTracker';
 
-type ProjectStatus = 'Draft' | 'Editing' | 'Review' | 'Done';
+type ProjectStatus = 'Draft' | 'Editing' | 'Review' | 'Done' | 'In Progress' | 'For Review' | 'Done/Published' | 'Cancelled';
 
-const statusConfig: Record<ProjectStatus, { color: string; bgColor: string }> = {
+const statusConfig: Record<string, { color: string; bgColor: string }> = {
   Draft: { color: '#6B7280', bgColor: '#F3F4F6' },
   Editing: { color: '#F59E0B', bgColor: '#FEF3C7' },
   Review: { color: '#3B82F6', bgColor: '#DBEAFE' },
   Done: { color: '#10B981', bgColor: '#D1FAE5' },
+  'In Progress': { color: '#F59E0B', bgColor: '#FEF3C7' },
+  'For Review': { color: '#3B82F6', bgColor: '#DBEAFE' },
+  'Done/Published': { color: '#10B981', bgColor: '#D1FAE5' },
+  Cancelled: { color: '#EF4444', bgColor: '#FEE2E2' },
 };
 
 export function DataTable() {
-  const { data: projectsData, isLoading, error } = useProjects();
+  const { data: tasks, isLoading, error } = useTasks();
 
-  if (isLoading) return <div className="p-8 text-center text-gray-500">Loading projects...</div>;
-  if (error) return <div className="p-8 text-center text-red-600">Error loading projects.</div>;
+  if (isLoading) return <div className="p-8 text-center text-gray-500">Loading tasks...</div>;
+  if (error) return <div className="p-8 text-center text-red-600">Error loading tasks.</div>;
 
-  const displayProjects = projectsData?.map((p: any) => ({
-    id: `PRJ-${String(p.id).padStart(3, '0')}`,
-    project: p.name,
-    category: 'Social Media', // Placeholder
-    mainTask: 'Content Creation', // Placeholder
-    subTask: 'Video Production', // Placeholder
-    details: 'Create 15-second Instagram reels for product launch', // Placeholder
-    status: (p.isActive ? 'Editing' : 'Done') as ProjectStatus,
+  const displayTasks = (tasks as any)?.map((t: any) => ({
+    id: t.taskCode || `ST-${String(t.id).padStart(3, '0')}`,
+    project: t.projectName || '-',
+    category: t.categoryName || '-',
+    mainTask: t.mainTaskName || '-',
+    subTask: t.name || '-',
+    details: t.details || '-',
+    status: t.status as ProjectStatus,
     assignee: {
-      name: 'Sarah Chen',
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah`,
-      initials: 'SC',
+      name: t.assigneeName || '-',
+      avatar: t.assigneeName ? `https://api.dicebear.com/7.x/avataaars/svg?seed=${t.assigneeName}` : undefined,
+      initials: t.assigneeName ? t.assigneeName.split(' ').map((n: string) => n[0]).join('') : '?',
     },
-    created: 'Feb 15, 2026',
-    completed: 'Feb 28, 2026',
+    created: t.createdDate ? new Date(t.createdDate).toLocaleDateString() : '-',
+    completed: t.status === 'Done/Published' && t.modifiedDate ? new Date(t.modifiedDate).toLocaleDateString() : '-',
   })) || [];
 
   return (
     <>
-      {/* Mobile Card View (remains same for now) */}
-      <div className="md:hidden space-y-4">
-        {displayProjects.map((project: any) => (
-          <MobileProjectCard
-            key={project.id}
-            project={{
-              id: project.id,
-              project: project.project,
-              category: project.category,
-              status: project.status,
-              assignee: project.assignee,
-              completed: project.completed,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Desktop/Tablet Table View */}
-      <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-[#FFFFFF] border-b border-gray-100">
@@ -84,42 +66,41 @@ export function DataTable() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {displayProjects.map((project: any, index: number) => (
+              {displayTasks.map((task: any, index: number) => (
                 <tr
-                  key={project.id}
-                  className={`hover:bg-gray-50/50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-[#FAFBFC]'
-                    }`}
+                  key={task.id}
+                  className={`hover:bg-gray-50/50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-[#FAFBFC]'}`}
                 >
-                  <td className="px-6 py-4 text-[13px] font-medium text-gray-900">{project.id}</td>
-                  <td className="px-6 py-4 text-[13px] text-gray-900 font-medium">{project.project}</td>
-                  <td className="px-6 py-4 text-[13px] text-gray-600">{project.category}</td>
-                  <td className="px-6 py-4 text-[13px] text-gray-600">{project.mainTask}</td>
-                  <td className="px-6 py-4 text-[13px] text-gray-600">{project.subTask}</td>
-                  <td className="px-6 py-4 text-[13px] text-gray-600 max-w-[200px] truncate">{project.details}</td>
+                  <td className="px-6 py-4 text-[13px] font-medium text-gray-900">{task.id}</td>
+                  <td className="px-6 py-4 text-[13px] text-gray-900 font-medium">{task.project}</td>
+                  <td className="px-6 py-4 text-[13px] text-gray-600">{task.category}</td>
+                  <td className="px-6 py-4 text-[13px] text-gray-600">{task.mainTask}</td>
+                  <td className="px-6 py-4 text-[13px] text-gray-600">{task.subTask}</td>
+                  <td className="px-6 py-4 text-[13px] text-gray-600 max-w-[200px] truncate">{task.details}</td>
                   <td className="px-6 py-4">
                     <Badge
                       className="font-semibold text-[10px] px-2.5 py-0.5 rounded-full"
                       style={{
-                        color: statusConfig[project.status as ProjectStatus].color,
-                        backgroundColor: statusConfig[project.status as ProjectStatus].bgColor,
+                        color: statusConfig[task.status]?.color || '#6B7280',
+                        backgroundColor: statusConfig[task.status]?.bgColor || '#F3F4F6',
                       }}
                     >
-                      {project.status}
+                      {task.status}
                     </Badge>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2.5">
                       <Avatar className="h-7 w-7">
-                        <AvatarImage src={project.assignee.avatar} />
-                        <AvatarFallback>{project.assignee.initials}</AvatarFallback>
+                        <AvatarImage src={task.assignee.avatar} />
+                        <AvatarFallback>{task.assignee.initials}</AvatarFallback>
                       </Avatar>
                       <span className="text-[13px] text-gray-900">
-                        {project.assignee.name}
+                        {task.assignee.name}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-[13px] text-gray-600">{project.created}</td>
-                  <td className="px-6 py-4 text-[13px] text-gray-600">{project.completed}</td>
+                  <td className="px-6 py-4 text-[13px] text-gray-600">{task.created}</td>
+                  <td className="px-6 py-4 text-[13px] text-gray-600">{task.completed}</td>
                   <td className="px-6 py-4">
                     <button className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
                       <Edit2 className="h-4 w-4" />
@@ -127,17 +108,23 @@ export function DataTable() {
                   </td>
                 </tr>
               ))}
+              {displayTasks.length === 0 && (
+                <tr>
+                  <td colSpan={11} className="px-6 py-8 text-center text-gray-500">
+                    No tasks found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
 
-        {/* Pagination Footer */}
         <div className="border-t border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600">
               Showing <span className="font-medium">1</span> to{' '}
-              <span className="font-medium">{displayProjects.length}</span> of{' '}
-              <span className="font-medium">{displayProjects.length}</span> results
+              <span className="font-medium">{displayTasks.length}</span> of{' '}
+              <span className="font-medium">{displayTasks.length}</span> results
             </div>
             <Pagination>
               <PaginationContent>

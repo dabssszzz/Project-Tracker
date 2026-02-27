@@ -10,7 +10,7 @@ public class SubtaskService(ISubtaskRepository repo, IProjectTrackerUnitOfWork u
 {
     public async Task<IEnumerable<SubtaskDto>> GetAllAsync()
     {
-        var entities = await repo.GetAllAsync();
+        var entities = await repo.GetAllWithHierarchyAsync();
         return entities.Select(ToDto);
     }
 
@@ -32,10 +32,14 @@ public class SubtaskService(ISubtaskRepository repo, IProjectTrackerUnitOfWork u
     {
         var entity = await repo.GetByIdAsync(dto.Id)
             ?? throw new InvalidOperationException($"Subtask {dto.Id} not found.");
+        
         entity.Name = dto.Name;
         entity.MainTaskId = dto.MainTaskId;
         entity.AssigneeId = dto.AssigneeId;
+        entity.Status = dto.Status;
+        entity.Details = dto.Details;
         entity.ModifiedDate = DateTime.UtcNow;
+        
         await repo.UpdateAsync(entity);
         await uow.SaveChangesAsync();
     }
@@ -46,6 +50,30 @@ public class SubtaskService(ISubtaskRepository repo, IProjectTrackerUnitOfWork u
         await uow.SaveChangesAsync();
     }
 
-    private static SubtaskDto ToDto(SubtaskEntity e) => new() { Id = e.Id, Name = e.Name, MainTaskId = e.MainTaskId, AssigneeId = e.AssigneeId };
-    private static SubtaskEntity ToEntity(SubtaskDto d) => new() { Name = d.Name, MainTaskId = d.MainTaskId, AssigneeId = d.AssigneeId };
+    private static SubtaskDto ToDto(SubtaskEntity e) => new()
+    {
+        Id = e.Id,
+        Name = e.Name,
+        TaskCode = $"ST-{e.Id:D3}",
+        Status = e.Status,
+        Details = e.Details,
+        MainTaskId = e.MainTaskId,
+        MainTaskName = e.MainTask?.Name,
+        CategoryName = e.MainTask?.Category?.Name,
+        ProjectName = e.MainTask?.Category?.Project?.Name,
+        AssigneeId = e.AssigneeId,
+        AssigneeName = e.Assignee?.Name,
+        SubtaskCategoryNames = string.Join(", ", e.SubtaskCategories.Select(sc => sc.Name))
+    };
+
+    private static SubtaskEntity ToEntity(SubtaskDto d) => new()
+    {
+        Id = d.Id,
+        Name = d.Name,
+        MainTaskId = d.MainTaskId,
+        AssigneeId = d.AssigneeId,
+        Status = d.Status,
+        Details = d.Details
+    };
 }
+

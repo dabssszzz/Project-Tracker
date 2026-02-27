@@ -16,14 +16,23 @@ export const categoryService = {
 
 export const mainTaskService = {
     getAll: () => api.get('/maintasks'),
+    getByCategory: (categoryId) => api.get(`/maintasks/category/${categoryId}`),
     create: (data) => api.post('/maintasks', data),
 };
 
-export const taskService = {
-    getAll: () => api.get('/projecttasks'),
-    getFiltered: (params) => api.get('/projecttasks/filter', { params }),
-    getById: (id) => api.get(`/projecttasks/${id}`),
-    create: (data) => api.post('/projecttasks', data),
-    update: (id, data) => api.put(`/projecttasks/${id}`, data),
-    delete: (id) => api.delete(`/projecttasks/${id}`),
+export const subtaskService = {
+    getAll: () => api.get('/subtasks'),
+    getByMainTask: (mainTaskId) => api.get(`/subtasks/maintask/${mainTaskId}`),
+    create: (data) => api.post('/subtasks', data),
 };
+
+export const subtaskCategoryService = {
+    getAll: () => api.get('/subtaskcategories'),
+    getBySubtask: (subtaskId) => api.get(`/subtaskcategories/subtask/${subtaskId}`),
+    create: (data) => api.post('/subtaskcategories', data),
+};
+
+export const assigneeService = {
+    getAll: () => api.get('/assignees'),
+};
+

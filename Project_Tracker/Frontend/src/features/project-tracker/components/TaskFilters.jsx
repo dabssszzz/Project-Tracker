@@ -1,7 +1,11 @@
 import React from 'react';
 import { Calendar } from 'lucide-react';
+import { useAssignees } from '../hooks/useProjectTracker';
+
 
 const TaskFilters = ({ filters, setFilters }) => {
+    const { data: assignees } = useAssignees();
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFilters(prev => ({ ...prev, [name]: value }));
@@ -17,17 +21,16 @@ const TaskFilters = ({ filters, setFilters }) => {
             <div className="flex-1 min-w-[200px] border border-gray-300 border-r-0 bg-white">
                 <label className="block text-[11px] text-gray-500 px-3 pt-2">Assignee</label>
                 <select
-                    name="assignee"
+                    name="assigneeId"
                     className="w-full px-3 pb-2 pt-1 text-sm bg-transparent outline-none text-gray-700 cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M5%207.5L10%2012.5L15%207.5%22%20stroke%3D%22%236B7280%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px_16px] bg-[right_12px_center] bg-no-repeat pr-10"
-                    value={filters.assignee || ''}
+                    value={filters.assigneeId || ''}
                     onChange={handleChange}
                 >
-                    <option value="">-- Select All Assignees --</option>
-                    <option value="Marie Dennielle">Marie Dennielle</option>
-                    <option value="Jasmine Benitez">Jasmine Benitez</option>
-                    <option value="John Doe">John Doe</option>
+                    <option value="">-- All Assignees --</option>
+                    {assignees?.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                 </select>
             </div>
+
 
             {/* Status Filter */}
             <div className="flex-1 min-w-[200px] border border-gray-300 border-r-0 bg-white">
