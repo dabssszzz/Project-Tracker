@@ -11,6 +11,8 @@ public interface IProjectTrackerDbContext
     DbSet<SubtaskEntity>         Subtasks          { get; set; }
     DbSet<SubtaskCategoryEntity> SubtaskCategories { get; set; }
     DbSet<AssigneeEntity>        Assignees         { get; set; }
+    DbSet<StatusEntity>          Statuses          { get; set; }
+    DbSet<ReportEntity>          Reports           { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

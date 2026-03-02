@@ -31,6 +31,7 @@ import {
     useSubtasks,
     useSubtaskCategories,
     useAssignees,
+    useStatuses,
     useTaskMutations
 } from '../../project-tracker/hooks/useProjectTracker';
 
@@ -47,7 +48,7 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
         subtaskId: '',
         subtaskCategoryId: '',
         details: '',
-        status: 'In Progress',
+        statusId: '',
         assigneeId: '',
         createDate: new Date().toISOString(),
         completeDate: ''
@@ -59,6 +60,7 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
     const { data: subtasks } = useSubtasks(formData.mainTaskId);
     const { data: subtaskCategories } = useSubtaskCategories(formData.subtaskId);
     const { data: assignees } = useAssignees();
+    const { data: statuses } = useStatuses();
     const { createMutation } = useTaskMutations();
 
     const handleChange = (name: string, value: string) => {
@@ -88,13 +90,32 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            const selectedProject = (projects as any)?.find((p: any) => p.id.toString() === formData.projectId);
+            const selectedCategory = (categories as any)?.find((c: any) => c.id.toString() === formData.categoryId);
+            const selectedMainTask = (mainTasks as any)?.find((m: any) => m.id.toString() === formData.mainTaskId);
+            const selectedSubtask = (subtasks as any)?.find((s: any) => s.id.toString() === formData.subtaskId);
+            const selectedSubCat = (subtaskCategories as any)?.find((sc: any) => sc.id.toString() === formData.subtaskCategoryId);
+            const selectedStatus = (statuses as any)?.find((s: any) => s.id.toString() === formData.statusId);
+            const selectedAssignee = (assignees as any)?.find((a: any) => a.id.toString() === formData.assigneeId);
+
             await (createMutation as any).mutateAsync({
-                name: formData.subtaskId ? (subtasks as any)?.find((s: any) => s.id.toString() === formData.subtaskId)?.name : '',
-                mainTaskId: parseInt(formData.mainTaskId),
-                assigneeId: formData.assigneeId ? parseInt(formData.assigneeId) : null,
-                status: formData.status,
+                projectId: parseInt(formData.projectId),
+                projectName: selectedProject?.name,
+                categoryId: parseInt(formData.categoryId),
+                categoryName: selectedCategory?.name,
+                maintaskId: parseInt(formData.mainTaskId),
+                maintaskName: selectedMainTask?.name,
+                subtaskId: parseInt(formData.subtaskId),
+                subtaskName: selectedSubtask?.name,
+                subtask_CategoryId: parseInt(formData.subtaskCategoryId),
+                subtask_CategoryName: selectedSubCat?.name,
+                assigneeId: parseInt(formData.assigneeId),
+                assigneeName: selectedAssignee?.name,
+                statusId: parseInt(formData.statusId),
+                statusName: selectedStatus?.name,
                 details: formData.details,
-                // Note: The backend handles the rest of the hierarchy mapping via MainTaskId
+                date_Start: formData.createDate,
+                date_Completed: formData.completeDate ? formData.completeDate : null,
             });
             onClose();
         } catch (error) {
@@ -185,15 +206,14 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-gray-700">Select Status</label>
-                            <Select value={formData.status} onValueChange={(v) => handleChange('status', v)}>
+                            <Select value={formData.statusId} onValueChange={(v) => handleChange('statusId', v)}>
                                 <SelectTrigger className="bg-white">
                                     <SelectValue placeholder="Select status" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="In Progress">In Progress</SelectItem>
-                                    <SelectItem value="For Review">For Review</SelectItem>
-                                    <SelectItem value="Done/Published">Done/Published</SelectItem>
-                                    <SelectItem value="Cancelled">Cancelled</SelectItem>
+                                    {(statuses as any)?.map((s: any) => (
+                                        <SelectItem key={s.id} value={s.id.toString()}>{s.name}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>

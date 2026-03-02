@@ -27,6 +27,13 @@ public class SubtasksController(ISubtaskService service, ILogger<SubtasksControl
         catch (Exception ex) { return HandleError(ex, $"Failed to get subtask {id}"); }
     }
 
+    [HttpGet("maintask/{mainTaskId:int}")]
+    public async Task<IActionResult> GetByMainTask(int mainTaskId)
+    {
+        try { return Success(await service.GetByMainTaskAsync(mainTaskId)); }
+        catch (Exception ex) { return HandleError(ex, $"Failed to get subtasks for main task {mainTaskId}"); }
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] SubtaskDto dto)
     {

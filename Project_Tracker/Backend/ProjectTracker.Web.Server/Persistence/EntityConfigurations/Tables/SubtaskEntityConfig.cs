@@ -10,21 +10,11 @@ public class SubtaskEntityConfig : IEntityTypeConfiguration<SubtaskEntity>
     {
         builder.ToTable("Subtasks");
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Name).IsRequired().HasMaxLength(200);
+        builder.Property(x => x.Name).IsRequired().HasMaxLength(500);
 
         builder.HasOne(x => x.MainTask)
-               .WithMany(x => x.Subtasks)
-               .HasForeignKey(x => x.MainTaskId)
-               .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasOne(x => x.Assignee)
-               .WithMany(x => x.Subtasks)
-               .HasForeignKey(x => x.AssigneeId)
-               .OnDelete(DeleteBehavior.SetNull);
-
-        builder.HasMany(x => x.SubtaskCategories)
-               .WithOne(x => x.Subtask)
-               .HasForeignKey(x => x.SubtaskId)
-               .OnDelete(DeleteBehavior.Cascade);
+            .WithMany(x => x.Subtasks)
+            .HasForeignKey(x => x.MainTaskId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -13,8 +13,8 @@ public class SubtaskCategoryEntityConfig : IEntityTypeConfiguration<SubtaskCateg
         builder.Property(x => x.Name).IsRequired().HasMaxLength(200);
 
         builder.HasOne(x => x.Subtask)
-               .WithMany(x => x.SubtaskCategories)
-               .HasForeignKey(x => x.SubtaskId)
-               .OnDelete(DeleteBehavior.Cascade);
+            .WithMany(x => x.SubtaskCategories)
+            .HasForeignKey(x => x.SubtaskId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

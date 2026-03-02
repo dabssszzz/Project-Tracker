@@ -11,11 +11,5 @@ public class AssigneeEntityConfig : IEntityTypeConfiguration<AssigneeEntity>
         builder.ToTable("Assignees");
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Name).IsRequired().HasMaxLength(200);
-        builder.Property(x => x.Email).IsRequired().HasMaxLength(300);
-
-        builder.HasMany(x => x.Subtasks)
-               .WithOne(x => x.Assignee)
-               .HasForeignKey(x => x.AssigneeId)
-               .OnDelete(DeleteBehavior.SetNull);
     }
 }

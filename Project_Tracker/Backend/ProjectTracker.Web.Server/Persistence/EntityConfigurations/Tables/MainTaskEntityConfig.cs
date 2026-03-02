@@ -16,10 +16,5 @@ public class MainTaskEntityConfig : IEntityTypeConfiguration<MainTaskEntity>
                .WithMany(x => x.MainTasks)
                .HasForeignKey(x => x.CategoryId)
                .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasMany(x => x.Subtasks)
-               .WithOne(x => x.MainTask)
-               .HasForeignKey(x => x.MainTaskId)
-               .OnDelete(DeleteBehavior.Cascade);
     }
 }

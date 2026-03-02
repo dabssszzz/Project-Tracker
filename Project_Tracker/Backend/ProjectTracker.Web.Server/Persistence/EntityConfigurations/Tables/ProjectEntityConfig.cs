@@ -11,10 +11,5 @@ public class ProjectEntityConfig : IEntityTypeConfiguration<ProjectEntity>
         builder.ToTable("Projects");
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Name).IsRequired().HasMaxLength(200);
-
-        builder.HasMany(x => x.Categories)
-               .WithOne(x => x.Project)
-               .HasForeignKey(x => x.ProjectId)
-               .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -33,7 +33,6 @@ public class AssigneeService(IAssigneeRepository repo, IProjectTrackerUnitOfWork
         var entity = await repo.GetByIdAsync(dto.Id)
             ?? throw new InvalidOperationException($"Assignee {dto.Id} not found.");
         entity.Name = dto.Name;
-        entity.Email = dto.Email;
         entity.ModifiedDate = DateTime.UtcNow;
         await repo.UpdateAsync(entity);
         await uow.SaveChangesAsync();
@@ -45,6 +44,6 @@ public class AssigneeService(IAssigneeRepository repo, IProjectTrackerUnitOfWork
         await uow.SaveChangesAsync();
     }
 
-    private static AssigneeDto ToDto(AssigneeEntity e) => new() { Id = e.Id, Name = e.Name, Email = e.Email };
-    private static AssigneeEntity ToEntity(AssigneeDto d) => new() { Name = d.Name, Email = d.Email };
+    private static AssigneeDto ToDto(AssigneeEntity e) => new() { Id = e.Id, Name = e.Name };
+    private static AssigneeEntity ToEntity(AssigneeDto d) => new() { Name = d.Name };
 }

@@ -16,6 +16,13 @@ public class SubtaskCategoriesController(ISubtaskCategoryService service, ILogge
         catch (Exception ex) { return HandleError(ex, "Failed to get subtask categories"); }
     }
 
+    [HttpGet("subtask/{subtaskId:int}")]
+    public async Task<IActionResult> GetBySubtask(int subtaskId)
+    {
+        try { return Success(await service.GetBySubtaskAsync(subtaskId)); }
+        catch (Exception ex) { return HandleError(ex, $"Failed to get categories for subtask {subtaskId}"); }
+    }
+
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {

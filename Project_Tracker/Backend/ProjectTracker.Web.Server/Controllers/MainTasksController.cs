@@ -27,6 +27,13 @@ public class MainTasksController(IMainTaskService service, ILogger<MainTasksCont
         catch (Exception ex) { return HandleError(ex, $"Failed to get main task {id}"); }
     }
 
+    [HttpGet("category/{categoryId:int}")]
+    public async Task<IActionResult> GetByCategory(int categoryId)
+    {
+        try { return Success(await service.GetByCategoryAsync(categoryId)); }
+        catch (Exception ex) { return HandleError(ex, $"Failed to get main tasks for category {categoryId}"); }
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] MainTaskDto dto)
     {

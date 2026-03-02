@@ -50,15 +50,15 @@ const TaskTable = ({ tasks, onEdit, onStatusChange }) => {
                 <tbody>
                     {tasks?.map((task) => (
                         <tr key={task.id} className="hover:bg-gray-50 transition-colors">
-                            <td className="px-3 py-3 text-xs text-gray-700 font-medium border border-gray-300 break-words">{task.taskCode}</td>
+                            <td className="px-3 py-3 text-xs text-gray-700 font-medium border border-gray-300 break-words">TASK-{task.id}</td>
                             <td className="px-3 py-3 text-xs text-gray-700 border border-gray-300">{task.projectName}</td>
                             <td className="px-3 py-3 text-xs text-gray-700 border border-gray-300">{task.categoryName}</td>
-                            <td className="px-3 py-3 text-xs text-gray-700 border border-gray-300">{task.mainTaskName}</td>
+                            <td className="px-3 py-3 text-xs text-gray-700 border border-gray-300">{task.maintaskName}</td>
                             <td className="px-3 py-3 text-xs text-gray-700 border border-gray-300 text-center">
-                                {task.name ? <span className="text-gray-500">{task.name}</span> : <span className="text-gray-400 font-medium">(proceed to details)</span>}
+                                {task.subtaskName ? <span className="text-gray-500">{task.subtaskName}</span> : <span className="text-gray-400 font-medium">(proceed to details)</span>}
                             </td>
                             <td className="px-3 py-3 text-xs text-gray-700 border border-gray-300 text-center">
-                                {task.subtaskCategoryNames || '-'}
+                                {task.subtask_CategoryName || '-'}
                             </td>
                             <td className="px-3 py-3 text-xs text-gray-700 border border-gray-300 relative group">
                                 <div className="flex items-center justify-between">
@@ -70,19 +70,17 @@ const TaskTable = ({ tasks, onEdit, onStatusChange }) => {
                             </td>
                             <td className="px-3 py-3 text-xs text-gray-700 border border-gray-300">
                                 <div className="flex flex-col items-center gap-1.5">
-                                    <span className={`flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-medium tracking-wide shadow-sm w-[130px] justify-center ${getStatusBadgeVariant(task.status)}`}>
-                                        {task.status === 'Done/Published' && <CheckSquare className="w-3 h-3" />}
-                                        {task.status}
+                                    <span className={`flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-medium tracking-wide shadow-sm w-[130px] justify-center ${getStatusBadgeVariant(task.statusName)}`}>
+                                        {task.statusName === 'Done/Published' && <CheckSquare className="w-3 h-3" />}
+                                        {task.statusName}
                                     </span>
                                     <select
-                                        value={task.status}
+                                        value={task.statusId}
                                         onChange={(e) => onStatusChange(task.id, e.target.value)}
                                         className="w-[130px] px-2 py-1 text-[11px] border border-gray-300 rounded text-gray-700 outline-none focus:border-blue-400 bg-white"
                                     >
-                                        <option value="Done/Published">Done/Published</option>
-                                        <option value="In Progress">In Progress</option>
-                                        <option value="For Review">For Review</option>
-                                        <option value="Cancelled">Cancelled</option>
+                                        {/* Status dropdown in table might need the full list too, but for now we map to the existing ones */}
+                                        <option value={task.statusId}>{task.statusName}</option>
                                     </select>
                                 </div>
                             </td>
@@ -95,13 +93,12 @@ const TaskTable = ({ tasks, onEdit, onStatusChange }) => {
                                 ) : '-'}
                             </td>
                             <td className="px-3 py-3 text-xs text-gray-700 border border-gray-300 text-center">
-                                {formatDate(task.createdDate || new Date().toISOString())}
+                                {formatDate(task.date_Start)}
                             </td>
                             <td className="px-3 py-3 text-xs text-gray-700 border border-gray-300 text-center">
-                                {task.status === 'Done/Published' ? formatDate(task.modifiedDate || new Date().toISOString()) : '-'}
+                                {task.statusName === 'Done/Published' ? formatDate(task.date_Completed) : '-'}
                             </td>
                         </tr>
-
                     ))}
                     {(!tasks || tasks.length === 0) && (
                         <tr>

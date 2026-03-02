@@ -13,6 +13,8 @@ public class ProjectTrackerDbContext(DbContextOptions<ProjectTrackerDbContext> o
     public DbSet<SubtaskEntity>         Subtasks          { get; set; }
     public DbSet<SubtaskCategoryEntity> SubtaskCategories { get; set; }
     public DbSet<AssigneeEntity>        Assignees         { get; set; }
+    public DbSet<StatusEntity>          Statuses          { get; set; }
+    public DbSet<ReportEntity>          Reports           { get; set; }
 
     public new async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         => await base.SaveChangesAsync(cancellationToken);

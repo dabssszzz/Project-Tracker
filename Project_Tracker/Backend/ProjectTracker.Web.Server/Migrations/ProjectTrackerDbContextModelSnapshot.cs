@@ -36,11 +36,6 @@ namespace ProjectTracker.Web.Server.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -169,6 +164,121 @@ namespace ProjectTracker.Web.Server.Migrations
                     b.ToTable("Projects", (string)null);
                 });
 
+            modelBuilder.Entity("ProjectTracker.Web.Server.Core.Models.Entities.Tables.ReportEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssigneeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Date_Completed")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date_Create")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date_Start")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Date_Update")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Details")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Is_Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MaintaskId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubtaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Subtask_CategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssigneeId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("MaintaskId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("StatusId");
+
+                    b.HasIndex("SubtaskId");
+
+                    b.HasIndex("Subtask_CategoryId");
+
+                    b.ToTable("Reports", (string)null);
+                });
+
+            modelBuilder.Entity("ProjectTracker.Web.Server.Core.Models.Entities.Tables.StatusEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Statuses", (string)null);
+                });
+
             modelBuilder.Entity("ProjectTracker.Web.Server.Core.Models.Entities.Tables.SubtaskCategoryEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -215,9 +325,6 @@ namespace ProjectTracker.Web.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AssigneeId")
-                        .HasColumnType("int");
-
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -238,12 +345,10 @@ namespace ProjectTracker.Web.Server.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AssigneeId");
 
                     b.HasIndex("MainTaskId");
 
@@ -272,6 +377,65 @@ namespace ProjectTracker.Web.Server.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("ProjectTracker.Web.Server.Core.Models.Entities.Tables.ReportEntity", b =>
+                {
+                    b.HasOne("ProjectTracker.Web.Server.Core.Models.Entities.Tables.AssigneeEntity", "Assignee")
+                        .WithMany()
+                        .HasForeignKey("AssigneeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ProjectTracker.Web.Server.Core.Models.Entities.Tables.CategoryEntity", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ProjectTracker.Web.Server.Core.Models.Entities.Tables.MainTaskEntity", "Maintask")
+                        .WithMany()
+                        .HasForeignKey("MaintaskId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ProjectTracker.Web.Server.Core.Models.Entities.Tables.ProjectEntity", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ProjectTracker.Web.Server.Core.Models.Entities.Tables.StatusEntity", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ProjectTracker.Web.Server.Core.Models.Entities.Tables.SubtaskEntity", "Subtask")
+                        .WithMany()
+                        .HasForeignKey("SubtaskId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ProjectTracker.Web.Server.Core.Models.Entities.Tables.SubtaskCategoryEntity", "Subtask_Category")
+                        .WithMany()
+                        .HasForeignKey("Subtask_CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Assignee");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Maintask");
+
+                    b.Navigation("Project");
+
+                    b.Navigation("Status");
+
+                    b.Navigation("Subtask");
+
+                    b.Navigation("Subtask_Category");
+                });
+
             modelBuilder.Entity("ProjectTracker.Web.Server.Core.Models.Entities.Tables.SubtaskCategoryEntity", b =>
                 {
                     b.HasOne("ProjectTracker.Web.Server.Core.Models.Entities.Tables.SubtaskEntity", "Subtask")
@@ -285,25 +449,13 @@ namespace ProjectTracker.Web.Server.Migrations
 
             modelBuilder.Entity("ProjectTracker.Web.Server.Core.Models.Entities.Tables.SubtaskEntity", b =>
                 {
-                    b.HasOne("ProjectTracker.Web.Server.Core.Models.Entities.Tables.AssigneeEntity", "Assignee")
-                        .WithMany("Subtasks")
-                        .HasForeignKey("AssigneeId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("ProjectTracker.Web.Server.Core.Models.Entities.Tables.MainTaskEntity", "MainTask")
                         .WithMany("Subtasks")
                         .HasForeignKey("MainTaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Assignee");
-
                     b.Navigation("MainTask");
-                });
-
-            modelBuilder.Entity("ProjectTracker.Web.Server.Core.Models.Entities.Tables.AssigneeEntity", b =>
-                {
-                    b.Navigation("Subtasks");
                 });
 
             modelBuilder.Entity("ProjectTracker.Web.Server.Core.Models.Entities.Tables.CategoryEntity", b =>

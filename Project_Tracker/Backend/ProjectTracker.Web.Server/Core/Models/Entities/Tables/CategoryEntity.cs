@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace ProjectTracker.Web.Server.Core.Models.Entities.Tables;
 
 public class CategoryEntity : BaseEntity

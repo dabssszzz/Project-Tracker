@@ -27,6 +27,13 @@ public class CategoriesController(ICategoryService service, ILogger<CategoriesCo
         catch (Exception ex) { return HandleError(ex, $"Failed to get category {id}"); }
     }
 
+    [HttpGet("project/{projectId:int}")]
+    public async Task<IActionResult> GetByProject(int projectId)
+    {
+        try { return Success(await service.GetByProjectAsync(projectId)); }
+        catch (Exception ex) { return HandleError(ex, $"Failed to get categories for project {projectId}"); }
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CategoryDto dto)
     {

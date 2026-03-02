@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using ProjectTracker.Web.Server.Core.DbContext;
 using ProjectTracker.Web.Server.Core.Models.Entities.Tables;
 using ProjectTracker.Web.Server.Core.Repositories;
@@ -5,4 +6,10 @@ using ProjectTracker.Web.Server.Core.Repositories;
 namespace ProjectTracker.Web.Server.Persistence.Repositories;
 
 public class CategoryRepository(IProjectTrackerDbContext context)
-    : Repository<CategoryEntity>(context), ICategoryRepository { }
+    : Repository<CategoryEntity>(context), ICategoryRepository
+{
+    public async Task<IEnumerable<CategoryEntity>> GetByProjectIdAsync(int projectId)
+    {
+        return await _dbSet.Where(c => c.ProjectId == projectId).ToListAsync();
+    }
+}

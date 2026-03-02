@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProjectTracker.Web.Server.Core.DbContext;
 using ProjectTracker.Web.Server.Core.Models.Entities.Tables;
@@ -11,12 +14,14 @@ public class SubtaskRepository(IProjectTrackerDbContext context)
     public async Task<IEnumerable<SubtaskEntity>> GetAllWithHierarchyAsync()
     {
         return await _dbSet
-            .Include(s => s.Assignee)
-            .Include(s => s.SubtaskCategories)
             .Include(s => s.MainTask)
                 .ThenInclude(m => m.Category)
                     .ThenInclude(c => c.Project)
             .ToListAsync();
     }
-}
 
+    public async Task<IEnumerable<SubtaskEntity>> GetByMainTaskIdAsync(int mainTaskId)
+    {
+        return await _dbSet.Where(s => s.MainTaskId == mainTaskId).ToListAsync();
+    }
+}

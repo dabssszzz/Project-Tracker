@@ -36,3 +36,13 @@ export const assigneeService = {
     getAll: () => api.get('/assignees'),
 };
 
+export const statusService = {
+    getAll: () => api.get('/statuses'),
+};
+
+export const reportService = {
+    getAll: () => api.get('/reports'),
+    create: (data) => api.post('/reports', data),
+    update: (id, data) => api.put(`/reports/${id}`, data),
+    delete: (id) => api.delete(`/reports/${id}`),
+};

@@ -663,4 +663,3 @@ C:\Users\Learjay.Encina\Documents\Project Tracker\Project_Tracker\Backend\Projec
 C:\Users\Learjay.Encina\Documents\Project Tracker\Project_Tracker\Backend\ProjectTracker.Web.Server\obj\Debug\net9.0\ProjectTracker.Web.Server.genruntimeconfig.cache
 C:\Users\Learjay.Encina\Documents\Project Tracker\Project_Tracker\Backend\ProjectTracker.Web.Server\obj\Debug\net9.0\ref\ProjectTracker.Web.Server.dll
 C:\Users\Learjay.Encina\Documents\Project Tracker\Project_Tracker\Backend\ProjectTracker.Web.Server\bin\Debug\net9.0\swagger_output.json
-C:\Users\Learjay.Encina\Documents\Project Tracker\Project_Tracker\Backend\ProjectTracker.Web.Server\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt

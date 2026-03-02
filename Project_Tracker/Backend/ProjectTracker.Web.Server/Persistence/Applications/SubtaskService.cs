@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using ProjectTracker.Web.Server.Core.Applications;
 using ProjectTracker.Web.Server.Core.Models.Dtos;
 using ProjectTracker.Web.Server.Core.Models.Entities.Tables;
@@ -20,6 +24,12 @@ public class SubtaskService(ISubtaskRepository repo, IProjectTrackerUnitOfWork u
         return entity == null ? null : ToDto(entity);
     }
 
+    public async Task<IEnumerable<SubtaskDto>> GetByMainTaskAsync(int mainTaskId)
+    {
+        var entities = await repo.GetByMainTaskIdAsync(mainTaskId);
+        return entities.Select(ToDto);
+    }
+
     public async Task<int> CreateAsync(SubtaskDto dto)
     {
         var entity = ToEntity(dto);
@@ -35,9 +45,6 @@ public class SubtaskService(ISubtaskRepository repo, IProjectTrackerUnitOfWork u
         
         entity.Name = dto.Name;
         entity.MainTaskId = dto.MainTaskId;
-        entity.AssigneeId = dto.AssigneeId;
-        entity.Status = dto.Status;
-        entity.Details = dto.Details;
         entity.ModifiedDate = DateTime.UtcNow;
         
         await repo.UpdateAsync(entity);
@@ -54,26 +61,13 @@ public class SubtaskService(ISubtaskRepository repo, IProjectTrackerUnitOfWork u
     {
         Id = e.Id,
         Name = e.Name,
-        TaskCode = $"ST-{e.Id:D3}",
-        Status = e.Status,
-        Details = e.Details,
-        MainTaskId = e.MainTaskId,
-        MainTaskName = e.MainTask?.Name,
-        CategoryName = e.MainTask?.Category?.Name,
-        ProjectName = e.MainTask?.Category?.Project?.Name,
-        AssigneeId = e.AssigneeId,
-        AssigneeName = e.Assignee?.Name,
-        SubtaskCategoryNames = string.Join(", ", e.SubtaskCategories.Select(sc => sc.Name))
+        MainTaskId = e.MainTaskId
     };
 
     private static SubtaskEntity ToEntity(SubtaskDto d) => new()
     {
         Id = d.Id,
         Name = d.Name,
-        MainTaskId = d.MainTaskId,
-        AssigneeId = d.AssigneeId,
-        Status = d.Status,
-        Details = d.Details
+        MainTaskId = d.MainTaskId
     };
 }
-

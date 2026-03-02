@@ -20,6 +20,12 @@ public class CategoryService(ICategoryRepository repo, IProjectTrackerUnitOfWork
         return entity == null ? null : ToDto(entity);
     }
 
+    public async Task<IEnumerable<CategoryDto>> GetByProjectAsync(int projectId)
+    {
+        var entities = await repo.GetByProjectIdAsync(projectId);
+        return entities.Select(ToDto);
+    }
+
     public async Task<int> CreateAsync(CategoryDto dto)
     {
         var entity = ToEntity(dto);

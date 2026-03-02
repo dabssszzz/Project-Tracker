@@ -5,7 +5,9 @@ import {
     mainTaskService,
     subtaskService,
     subtaskCategoryService,
-    assigneeService
+    assigneeService,
+    statusService,
+    reportService
 } from '../services/projectTrackerService';
 
 export const useProjects = () => {
@@ -70,11 +72,21 @@ export const useAssignees = () => {
     });
 };
 
+export const useStatuses = () => {
+    return useQuery({
+        queryKey: ['statuses'],
+        queryFn: async () => {
+            return await statusService.getAll();
+        },
+    });
+};
+
 export const useTasks = () => {
     return useQuery({
         queryKey: ['tasks'],
         queryFn: async () => {
-            return await subtaskService.getAll();
+            // Now fetching from the Reports API which provides the flat structure needed for the tables
+            return await reportService.getAll();
         },
     });
 };
@@ -84,21 +96,21 @@ export const useTaskMutations = () => {
     const queryClient = useQueryClient();
 
     const createMutation = useMutation({
-        mutationFn: (data) => subtaskService.create(data),
+        mutationFn: (data) => reportService.create(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tasks'] });
         },
     });
 
     const updateMutation = useMutation({
-        mutationFn: ({ id, data }) => subtaskService.update(id, data),
+        mutationFn: ({ id, data }) => reportService.update(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tasks'] });
         },
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (id) => subtaskService.delete(id),
+        mutationFn: (id) => reportService.delete(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tasks'] });
         },
@@ -106,5 +118,3 @@ export const useTaskMutations = () => {
 
     return { createMutation, updateMutation, deleteMutation };
 };
-
-

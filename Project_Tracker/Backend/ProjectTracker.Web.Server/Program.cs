@@ -23,6 +23,8 @@ builder.Services.AddScoped<IMainTaskRepository,        MainTaskRepository>();
 builder.Services.AddScoped<ISubtaskRepository,         SubtaskRepository>();
 builder.Services.AddScoped<ISubtaskCategoryRepository, SubtaskCategoryRepository>();
 builder.Services.AddScoped<IAssigneeRepository,        AssigneeRepository>();
+builder.Services.AddScoped<IStatusRepository,          StatusRepository>();
+builder.Services.AddScoped<IReportRepository,          ReportRepository>();
 
 // ── Services ──────────────────────────────────────────────────
 builder.Services.AddScoped<IProjectService,         ProjectService>();
@@ -31,6 +33,9 @@ builder.Services.AddScoped<IMainTaskService,        MainTaskService>();
 builder.Services.AddScoped<ISubtaskService,         SubtaskService>();
 builder.Services.AddScoped<ISubtaskCategoryService, SubtaskCategoryService>();
 builder.Services.AddScoped<IAssigneeService,        AssigneeService>();
+builder.Services.AddScoped<IStatusService,          StatusService>();
+builder.Services.AddScoped<IReportService,          ReportService>();
+builder.Services.AddScoped<IAnalyticsService,       AnalyticsService>();
 
 // ── Unit of Work ─────────────────────────────────────────────
 builder.Services.AddScoped<IProjectTrackerUnitOfWork, ProjectTrackerUnitOfWork>();
