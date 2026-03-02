@@ -4,5 +4,5 @@ namespace ProjectTracker.Web.Server.Core.Repositories;
 
 public interface IMainTaskRepository : IRepository<MainTaskEntity>
 {
-    Task<MainTaskEntity?> GetByNameAsync(string name);
+    Task<IEnumerable<MainTaskEntity>> GetByCategoryIdAsync(int categoryId);
 }

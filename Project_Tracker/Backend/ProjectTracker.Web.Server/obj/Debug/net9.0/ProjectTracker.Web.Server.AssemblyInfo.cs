@@ -13,7 +13,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ProjectTracker.Web.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+<<<<<<< HEAD
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bfc3c837b53b06e280d5e89e9a48b470581dc5ca")]
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5c75e507036be661ed21b61fe2bd9aa7202a1b48")]
+>>>>>>> origin/Learjay
 [assembly: System.Reflection.AssemblyProductAttribute("ProjectTracker.Web.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ProjectTracker.Web.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,6 +1,6 @@
-using ProjectTracker.Web.Server.Core.Models.Entities.Tables;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ProjectTracker.Web.Server.Core.Models.Entities.Tables;
 
 namespace ProjectTracker.Web.Server.Persistence.EntityConfigurations.Tables;
 
@@ -9,13 +9,12 @@ public class CategoryEntityConfig : IEntityTypeConfiguration<CategoryEntity>
     public void Configure(EntityTypeBuilder<CategoryEntity> builder)
     {
         builder.ToTable("Categories");
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Name).IsRequired().HasMaxLength(200);
-        builder.Property(e => e.IsActive).IsRequired().HasDefaultValue(true);
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.Name).IsRequired().HasMaxLength(200);
 
-        builder.HasOne(e => e.Project)
-               .WithMany(p => p.Categories)
-               .HasForeignKey(e => e.ProjectId)
-               .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.Project)
+               .WithMany(x => x.Categories)
+               .HasForeignKey(x => x.ProjectId)
+               .OnDelete(DeleteBehavior.Cascade);
     }
 }

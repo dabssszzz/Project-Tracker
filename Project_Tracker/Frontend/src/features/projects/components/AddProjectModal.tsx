@@ -24,6 +24,16 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '../../../shared/ui/popover';
+import {
+    useProjects,
+    useCategories,
+    useMainTasks,
+    useSubtasks,
+    useSubtaskCategories,
+    useAssignees,
+    useStatuses,
+    useTaskMutations
+} from '../../project-tracker/hooks/useProjectTracker';
 
 interface AddProjectModalProps {
     isOpen: boolean;
@@ -31,14 +41,86 @@ interface AddProjectModalProps {
 }
 
 export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
-    const [createDate, setCreateDate] = React.useState<Date>();
-    const [completeDate, setCompleteDate] = React.useState<Date>();
+    const [formData, setFormData] = React.useState({
+        projectId: '',
+        categoryId: '',
+        mainTaskId: '',
+        subtaskId: '',
+        subtaskCategoryId: '',
+        details: '',
+        statusId: '',
+        assigneeId: '',
+        createDate: new Date().toISOString(),
+        completeDate: ''
+    });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const { data: projects } = useProjects();
+    const { data: categories } = useCategories(formData.projectId);
+    const { data: mainTasks } = useMainTasks(formData.categoryId);
+    const { data: subtasks } = useSubtasks(formData.mainTaskId);
+    const { data: subtaskCategories } = useSubtaskCategories(formData.subtaskId);
+    const { data: assignees } = useAssignees();
+    const { data: statuses } = useStatuses();
+    const { createMutation } = useTaskMutations();
+
+    const handleChange = (name: string, value: string) => {
+        setFormData(prev => {
+            const newData = { ...prev, [name]: value };
+
+            // Cascading reset
+            if (name === 'projectId') {
+                newData.categoryId = '';
+                newData.mainTaskId = '';
+                newData.subtaskId = '';
+                newData.subtaskCategoryId = '';
+            } else if (name === 'categoryId') {
+                newData.mainTaskId = '';
+                newData.subtaskId = '';
+                newData.subtaskCategoryId = '';
+            } else if (name === 'mainTaskId') {
+                newData.subtaskId = '';
+                newData.subtaskCategoryId = '';
+            } else if (name === 'subtaskId') {
+                newData.subtaskCategoryId = '';
+            }
+            return newData;
+        });
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Logic for submitting the form would go here
-        console.log('Form submitted');
-        onClose();
+        try {
+            const selectedProject = (projects as any)?.find((p: any) => p.id.toString() === formData.projectId);
+            const selectedCategory = (categories as any)?.find((c: any) => c.id.toString() === formData.categoryId);
+            const selectedMainTask = (mainTasks as any)?.find((m: any) => m.id.toString() === formData.mainTaskId);
+            const selectedSubtask = (subtasks as any)?.find((s: any) => s.id.toString() === formData.subtaskId);
+            const selectedSubCat = (subtaskCategories as any)?.find((sc: any) => sc.id.toString() === formData.subtaskCategoryId);
+            const selectedStatus = (statuses as any)?.find((s: any) => s.id.toString() === formData.statusId);
+            const selectedAssignee = (assignees as any)?.find((a: any) => a.id.toString() === formData.assigneeId);
+
+            await (createMutation as any).mutateAsync({
+                projectId: parseInt(formData.projectId),
+                projectName: selectedProject?.name,
+                categoryId: parseInt(formData.categoryId),
+                categoryName: selectedCategory?.name,
+                maintaskId: parseInt(formData.mainTaskId),
+                maintaskName: selectedMainTask?.name,
+                subtaskId: parseInt(formData.subtaskId),
+                subtaskName: selectedSubtask?.name,
+                subtask_CategoryId: parseInt(formData.subtaskCategoryId),
+                subtask_CategoryName: selectedSubCat?.name,
+                assigneeId: parseInt(formData.assigneeId),
+                assigneeName: selectedAssignee?.name,
+                statusId: parseInt(formData.statusId),
+                statusName: selectedStatus?.name,
+                details: formData.details,
+                date_Start: formData.createDate,
+                date_Completed: formData.completeDate ? formData.completeDate : null,
+            });
+            onClose();
+        } catch (error) {
+            console.error('Error creating task:', error);
+        }
     };
 
     return (
@@ -49,176 +131,127 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-6 px-1">
-                    {/* Main Select Fields - 2 columns */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-gray-700">Select Project</label>
-                            <Select>
+                            <Select value={formData.projectId} onValueChange={(v) => handleChange('projectId', v)}>
                                 <SelectTrigger className="bg-white">
                                     <SelectValue placeholder="Select project" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="project-1">Global Campaign</SelectItem>
-                                    <SelectItem value="project-2">Social Media Launch</SelectItem>
+                                    {(projects as any)?.map((p: any) => <SelectItem key={p.id} value={p.id.toString()}>{p.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
 
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-gray-700">Select Category</label>
-                            <Select>
+                            <Select value={formData.categoryId} onValueChange={(v) => handleChange('categoryId', v)} disabled={!formData.projectId}>
                                 <SelectTrigger className="bg-white">
                                     <SelectValue placeholder="Select category" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="cat-1">Marketing</SelectItem>
-                                    <SelectItem value="cat-2">Digital</SelectItem>
+                                    {(categories as any)?.map((c: any) => <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
 
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-gray-700">Select Main Task</label>
-                            <Select>
+                            <Select value={formData.mainTaskId} onValueChange={(v) => handleChange('mainTaskId', v)} disabled={!formData.categoryId}>
                                 <SelectTrigger className="bg-white">
                                     <SelectValue placeholder="Select main task" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="task-1">Content Strategy</SelectItem>
-                                    <SelectItem value="task-2">Design Phase</SelectItem>
+                                    {(mainTasks as any)?.map((m: any) => <SelectItem key={m.id} value={m.id.toString()}>{m.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
 
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-gray-700">Select Subtask</label>
-                            <Select>
+                            <Select value={formData.subtaskId} onValueChange={(v) => handleChange('subtaskId', v)} disabled={!formData.mainTaskId}>
                                 <SelectTrigger className="bg-white">
                                     <SelectValue placeholder="Select subtask" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="sub-1">Initial Draft</SelectItem>
-                                    <SelectItem value="sub-2">Final Review</SelectItem>
+                                    {(subtasks as any)?.map((s: any) => <SelectItem key={s.id} value={s.id.toString()}>{s.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
 
                         <div className="space-y-2 md:col-span-2">
                             <label className="text-sm font-semibold text-gray-700">Select Subtask Category</label>
-                            <Select>
+                            <Select value={formData.subtaskCategoryId} onValueChange={(v) => handleChange('subtaskCategoryId', v)} disabled={!formData.subtaskId}>
                                 <SelectTrigger className="bg-white">
                                     <SelectValue placeholder="Select subtask category" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="sc-1">Creative</SelectItem>
-                                    <SelectItem value="sc-2">Technical</SelectItem>
+                                    {(subtaskCategories as any)?.map((sc: any) => <SelectItem key={sc.id} value={sc.id.toString()}>{sc.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
                     </div>
 
-                    {/* Details Section */}
                     <div className="space-y-2">
                         <label className="text-sm font-semibold text-gray-700">Details (Optional)</label>
                         <Textarea
                             placeholder="Add project details"
                             className="resize-none min-h-[100px] bg-white"
+                            value={formData.details}
+                            onChange={(e) => handleChange('details', e.target.value)}
                         />
                     </div>
 
-                    {/* Additional Fields - 2 columns */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-gray-700">Select Status</label>
-                            <Select>
+                            <Select value={formData.statusId} onValueChange={(v) => handleChange('statusId', v)}>
                                 <SelectTrigger className="bg-white">
                                     <SelectValue placeholder="Select status" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="draft">Draft</SelectItem>
-                                    <SelectItem value="editing">Editing</SelectItem>
-                                    <SelectItem value="review">Review</SelectItem>
-                                    <SelectItem value="done">Done</SelectItem>
+                                    {(statuses as any)?.map((s: any) => (
+                                        <SelectItem key={s.id} value={s.id.toString()}>{s.name}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>
 
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-gray-700">Select Assignee</label>
-                            <Select>
+                            <Select value={formData.assigneeId} onValueChange={(v) => handleChange('assigneeId', v)}>
                                 <SelectTrigger className="bg-white">
                                     <SelectValue placeholder="Select assignee" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="sarah">Sarah Chen</SelectItem>
-                                    <SelectItem value="michael">Michael Rodriguez</SelectItem>
-                                    <SelectItem value="emily">Emily Parker</SelectItem>
+                                    {(assignees as any)?.map((a: any) => <SelectItem key={a.id} value={a.id.toString()}>{a.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
 
+                        {/* Date fields simplified for now as Popover + Calendar interaction in TS varies */}
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-gray-700">Create Date</label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        className={cn(
-                                            "w-full justify-start text-left font-normal bg-white h-11",
-                                            !createDate && "text-muted-foreground"
-                                        )}
-                                    >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {createDate ? format(createDate, "PPP") : <span>Pick a date</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 border-0 shadow-none bg-transparent" align="start">
-                                    <Card className="p-0 border-0 shadow-lg overflow-hidden">
-                                        <CardContent className="p-0">
-                                            <Calendar
-                                                mode="single"
-                                                selected={createDate}
-                                                onSelect={setCreateDate}
-                                                initialFocus
-                                            />
-                                        </CardContent>
-                                    </Card>
-                                </PopoverContent>
-                            </Popover>
+                            <input
+                                type="date"
+                                className="w-full flex h-11 rounded-md border border-input bg-white px-3 py-2 text-sm"
+                                value={formData.createDate.split('T')[0]}
+                                onChange={(e) => handleChange('createDate', e.target.value)}
+                            />
                         </div>
 
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-gray-700">Complete Date</label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        className={cn(
-                                            "w-full justify-start text-left font-normal bg-white h-11",
-                                            !completeDate && "text-muted-foreground"
-                                        )}
-                                    >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {completeDate ? format(completeDate, "PPP") : <span>Pick a date</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 border-0 shadow-none bg-transparent" align="start">
-                                    <Card className="p-0 border-0 shadow-lg overflow-hidden">
-                                        <CardContent className="p-0">
-                                            <Calendar
-                                                mode="single"
-                                                selected={completeDate}
-                                                onSelect={setCompleteDate}
-                                                initialFocus
-                                            />
-                                        </CardContent>
-                                    </Card>
-                                </PopoverContent>
-                            </Popover>
+                            <input
+                                type="date"
+                                className="w-full flex h-11 rounded-md border border-input bg-white px-3 py-2 text-sm"
+                                value={formData.completeDate}
+                                onChange={(e) => handleChange('completeDate', e.target.value)}
+                            />
                         </div>
                     </div>
 
-                    {/* Action Buttons */}
                     <div className="flex items-center justify-end gap-3 pt-6 border-t mt-8">
                         <Button
                             type="button"
@@ -231,8 +264,9 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
                         <Button
                             type="submit"
                             className="px-8 h-11 bg-[#E10600] text-white hover:bg-[#c40500]"
+                            disabled={createMutation.isPending}
                         >
-                            Submit
+                            {createMutation.isPending ? 'Submitting...' : 'Submit'}
                         </Button>
                     </div>
                 </form>
@@ -240,3 +274,4 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
         </Dialog>
     );
 }
+

@@ -1,9 +1,13 @@
-using ProjectTracker.Web.Server.Core.Models.Entities;
+using System.Collections.Generic;
 
 namespace ProjectTracker.Web.Server.Core.Models.Entities.Tables;
 
 public class MainTaskEntity : BaseEntity
 {
     public string Name { get; set; } = string.Empty;
-    public ICollection<ProjectTaskEntity> Tasks { get; set; } = new List<ProjectTaskEntity>();
+
+    public int CategoryId { get; set; }
+    public CategoryEntity Category { get; set; } = null!;
+
+    public ICollection<SubtaskEntity> Subtasks { get; set; } = new List<SubtaskEntity>();
 }

@@ -1,57 +1,49 @@
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using ProjectTracker.Web.Server.Core.Applications;
 using ProjectTracker.Web.Server.Core.Models.Dtos;
-using ProjectTracker.Web.Server.Persistence.DbContext;
+using ProjectTracker.Web.Server.Core.Models.Entities.Tables;
+using ProjectTracker.Web.Server.Core.Repositories;
 
 namespace ProjectTracker.Web.Server.Persistence.Applications;
 
-public class AnalyticsService : IAnalyticsService
+public class AnalyticsService(IReportRepository reportRepo, IProjectRepository projectRepo) : IAnalyticsService
 {
-    private readonly ProjectTrackerDbContext _context;
-
-    public AnalyticsService(ProjectTrackerDbContext context)
+    public async Task<DashboardDto> GetDashboardDataAsync()
     {
-        _context = context;
-    }
+        var reports = (await reportRepo.GetAllWithDetailsAsync()).ToList();
+        var projects = (await projectRepo.GetAllAsync()).ToList();
 
-    public async Task<AnalyticsDashboardDto> GetDashboardMetricsAsync()
-    {
-        var tasks = await _context.ProjectTasks
-            .Include(t => t.Project)
-            .Where(t => t.IsActive)
-            .ToListAsync();
-
-        var dto = new AnalyticsDashboardDto
+        var dto = new DashboardDto
         {
-            TotalTasks = tasks.Count,
-            CompletedTasks = tasks.Count(t => t.Status == "Done/Published"),
-            InProgressTasks = tasks.Count(t => t.Status == "In Progress"),
-            ForReviewTasks = tasks.Count(t => t.Status == "For Review"),
-            CancelledTasks = tasks.Count(t => t.Status == "Cancelled"),
-            
-            TasksByStatus = tasks
-                .GroupBy(t => t.Status)
-                .Select(g => new TaskStatusCountDto { Status = g.Key ?? "Unknown", Count = g.Count() })
+            TotalTasks = reports.Count,
+            InProgressTasks = reports.Count(r => r.Status?.Name == "In Progress"),
+            CompletedTasks = reports.Count(r => r.Status?.Name == "Done"),
+            ForReviewTasks = reports.Count(r => r.Status?.Name == "Review"),
+
+            TasksByStatus = reports
+                .GroupBy(r => r.Status?.Name ?? "Unknown")
+                .Select(g => new StatusCountDto { Status = g.Key, Count = g.Count() })
                 .ToList(),
 
-            TasksByAssignee = tasks
-                .Where(t => !string.IsNullOrEmpty(t.Assignee))
-                .GroupBy(t => t.Assignee)
-                .Select(g => new AssigneeTaskCountDto { Assignee = g.Key!, Count = g.Count() })
-                .OrderByDescending(x => x.Count)
-                .Take(5)
+            TasksByAssignee = reports
+                .GroupBy(r => r.Assignee?.Name ?? "Unassigned")
+                .Select(g => new AssigneeCountDto { Assignee = g.Key, Count = g.Count() })
                 .ToList(),
-                
-            ProjectProgress = tasks
-                .Where(t => t.Project != null)
-                .GroupBy(t => t.Project)
-                .Select(g => new ProjectProgressDto
+
+            ProjectProgress = projects.Select(p =>
+            {
+                var projectReports = reports.Where(r => r.ProjectId == p.Id).ToList();
+                var total = projectReports.Count;
+                var completed = projectReports.Count(r => r.Status?.Name == "Done");
+                return new ProjectProgressDto
                 {
-                    ProjectName = g.Key!.Name,
-                    TotalTasks = g.Count(),
-                    CompletedTasks = g.Count(t => t.Status == "Done/Published")
-                })
-                .ToList()
+                    ProjectName = p.Name,
+                    CompletionPercentage = total > 0 ? (int)((double)completed / total * 100) : 0
+                };
+            }).ToList()
         };
 
         return dto;

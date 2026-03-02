@@ -6,25 +6,14 @@ namespace ProjectTracker.Web.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CategoriesController : BaseController
+public class CategoriesController(ICategoryService service, ILogger<CategoriesController> logger)
+    : BaseController(logger)
 {
-    private readonly ICategoryService _service;
-
-    public CategoriesController(ICategoryService service, ILogger<CategoriesController> logger) : base(logger)
-        => _service = service;
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        try { return Success(await _service.GetAllAsync()); }
+        try { return Success(await service.GetAllAsync()); }
         catch (Exception ex) { return HandleError(ex, "Failed to get categories"); }
-    }
-
-    [HttpGet("project/{projectId:int}")]
-    public async Task<IActionResult> GetByProject(int projectId)
-    {
-        try { return Success(await _service.GetByProjectIdAsync(projectId)); }
-        catch (Exception ex) { return HandleError(ex, $"Failed to get categories for project {projectId}"); }
     }
 
     [HttpGet("{id:int}")]
@@ -32,10 +21,17 @@ public class CategoriesController : BaseController
     {
         try
         {
-            var data = await _service.GetByIdAsync(id);
+            var data = await service.GetByIdAsync(id);
             return data == null ? NotFoundError($"Category {id} not found") : Success(data);
         }
         catch (Exception ex) { return HandleError(ex, $"Failed to get category {id}"); }
+    }
+
+    [HttpGet("project/{projectId:int}")]
+    public async Task<IActionResult> GetByProject(int projectId)
+    {
+        try { return Success(await service.GetByProjectAsync(projectId)); }
+        catch (Exception ex) { return HandleError(ex, $"Failed to get categories for project {projectId}"); }
     }
 
     [HttpPost]
@@ -44,8 +40,8 @@ public class CategoriesController : BaseController
         try
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var id = await _service.CreateAsync(dto);
-            return Success(new { id }, "Category created successfully");
+            var id = await service.CreateAsync(dto);
+            return Success(new { id }, "Category created");
         }
         catch (Exception ex) { return HandleError(ex, "Failed to create category"); }
     }
@@ -57,8 +53,8 @@ public class CategoriesController : BaseController
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             if (id != dto.Id) return BadRequest(new { error = "ID mismatch" });
-            await _service.UpdateAsync(dto);
-            return Success(dto, "Category updated successfully");
+            await service.UpdateAsync(dto);
+            return Success(dto, "Category updated");
         }
         catch (InvalidOperationException ex) { return NotFoundError(ex.Message); }
         catch (Exception ex) { return HandleError(ex, $"Failed to update category {id}"); }
@@ -67,7 +63,7 @@ public class CategoriesController : BaseController
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        try { await _service.DeleteAsync(id); return Success(new { id }, "Category deleted"); }
+        try { await service.DeleteAsync(id); return Success(new { id }, "Category deleted"); }
         catch (Exception ex) { return HandleError(ex, $"Failed to delete category {id}"); }
     }
 }

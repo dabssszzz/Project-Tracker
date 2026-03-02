@@ -5138,23 +5138,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Engelbert.Morales\\.nuget\\packages\\": {},
+    "C:\\Users\\Learjay.Encina\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Engelbert.Morales\\Documents\\Project Tracker 2\\Project_Tracker\\Backend\\ProjectTracker.Web.Server\\ProjectTracker.Web.Server.csproj",
+      "projectUniqueName": "C:\\Users\\Learjay.Encina\\Documents\\Project Tracker\\Project_Tracker\\Backend\\ProjectTracker.Web.Server\\ProjectTracker.Web.Server.csproj",
       "projectName": "ProjectTracker.Web.Server",
-      "projectPath": "C:\\Users\\Engelbert.Morales\\Documents\\Project Tracker 2\\Project_Tracker\\Backend\\ProjectTracker.Web.Server\\ProjectTracker.Web.Server.csproj",
-      "packagesPath": "C:\\Users\\Engelbert.Morales\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Engelbert.Morales\\Documents\\Project Tracker 2\\Project_Tracker\\Backend\\ProjectTracker.Web.Server\\obj\\",
+      "projectPath": "C:\\Users\\Learjay.Encina\\Documents\\Project Tracker\\Project_Tracker\\Backend\\ProjectTracker.Web.Server\\ProjectTracker.Web.Server.csproj",
+      "packagesPath": "C:\\Users\\Learjay.Encina\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Learjay.Encina\\Documents\\Project Tracker\\Project_Tracker\\Backend\\ProjectTracker.Web.Server\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Engelbert.Morales\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Learjay.Encina\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],

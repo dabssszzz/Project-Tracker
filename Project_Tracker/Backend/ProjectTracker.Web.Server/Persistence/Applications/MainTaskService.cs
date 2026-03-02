@@ -6,53 +6,51 @@ using ProjectTracker.Web.Server.Core.UnitOfWork;
 
 namespace ProjectTracker.Web.Server.Persistence.Applications;
 
-public class MainTaskService : IMainTaskService
+public class MainTaskService(IMainTaskRepository repo, IProjectTrackerUnitOfWork uow) : IMainTaskService
 {
-    private readonly IMainTaskRepository _repository;
-    private readonly IProjectTrackerUnitOfWork _unitOfWork;
-
-    public MainTaskService(IMainTaskRepository repository, IProjectTrackerUnitOfWork unitOfWork)
-    {
-        _repository = repository;
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task<IEnumerable<MainTaskDto>> GetAllAsync()
-        => (await _repository.GetAllAsync()).Select(MapToDto);
+    {
+        var entities = await repo.GetAllAsync();
+        return entities.Select(ToDto);
+    }
 
     public async Task<MainTaskDto?> GetByIdAsync(int id)
     {
-        var entity = await _repository.GetByIdAsync(id);
-        return entity == null ? null : MapToDto(entity);
+        var entity = await repo.GetByIdAsync(id);
+        return entity == null ? null : ToDto(entity);
+    }
+
+    public async Task<IEnumerable<MainTaskDto>> GetByCategoryAsync(int categoryId)
+    {
+        var entities = await repo.GetByCategoryIdAsync(categoryId);
+        return entities.Select(ToDto);
     }
 
     public async Task<int> CreateAsync(MainTaskDto dto)
     {
-        var entity = new MainTaskEntity { Name = dto.Name, IsActive = true, CreatedDate = DateTime.UtcNow };
-        await _repository.AddAsync(entity);
-        await _unitOfWork.SaveChangesAsync();
+        var entity = ToEntity(dto);
+        await repo.AddAsync(entity);
+        await uow.SaveChangesAsync();
         return entity.Id;
     }
 
     public async Task UpdateAsync(MainTaskDto dto)
     {
-        var entity = await _repository.GetByIdAsync(dto.Id)
-            ?? throw new InvalidOperationException($"MainTask with ID {dto.Id} not found.");
+        var entity = await repo.GetByIdAsync(dto.Id)
+            ?? throw new InvalidOperationException($"MainTask {dto.Id} not found.");
         entity.Name = dto.Name;
-        entity.IsActive = dto.IsActive;
+        entity.CategoryId = dto.CategoryId;
         entity.ModifiedDate = DateTime.UtcNow;
-        await _repository.UpdateAsync(entity);
-        await _unitOfWork.SaveChangesAsync();
+        await repo.UpdateAsync(entity);
+        await uow.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(int id)
     {
-        await _repository.DeleteAsync(id);
-        await _unitOfWork.SaveChangesAsync();
+        await repo.DeleteAsync(id);
+        await uow.SaveChangesAsync();
     }
 
-    private static MainTaskDto MapToDto(MainTaskEntity e) => new()
-    {
-        Id = e.Id, Name = e.Name, IsActive = e.IsActive, CreatedDate = e.CreatedDate
-    };
+    private static MainTaskDto ToDto(MainTaskEntity e) => new() { Id = e.Id, Name = e.Name, CategoryId = e.CategoryId };
+    private static MainTaskEntity ToEntity(MainTaskDto d) => new() { Name = d.Name, CategoryId = d.CategoryId };
 }

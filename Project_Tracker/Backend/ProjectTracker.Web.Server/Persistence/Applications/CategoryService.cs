@@ -6,58 +6,51 @@ using ProjectTracker.Web.Server.Core.UnitOfWork;
 
 namespace ProjectTracker.Web.Server.Persistence.Applications;
 
-public class CategoryService : ICategoryService
+public class CategoryService(ICategoryRepository repo, IProjectTrackerUnitOfWork uow) : ICategoryService
 {
-    private readonly ICategoryRepository _repository;
-    private readonly IProjectTrackerUnitOfWork _unitOfWork;
-
-    public CategoryService(ICategoryRepository repository, IProjectTrackerUnitOfWork unitOfWork)
-    {
-        _repository = repository;
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task<IEnumerable<CategoryDto>> GetAllAsync()
-        => (await _repository.GetAllAsync()).Select(MapToDto);
-
-    public async Task<IEnumerable<CategoryDto>> GetByProjectIdAsync(int projectId)
-        => (await _repository.GetByProjectIdAsync(projectId)).Select(MapToDto);
+    {
+        var entities = await repo.GetAllAsync();
+        return entities.Select(ToDto);
+    }
 
     public async Task<CategoryDto?> GetByIdAsync(int id)
     {
-        var entity = await _repository.GetByIdAsync(id);
-        return entity == null ? null : MapToDto(entity);
+        var entity = await repo.GetByIdAsync(id);
+        return entity == null ? null : ToDto(entity);
+    }
+
+    public async Task<IEnumerable<CategoryDto>> GetByProjectAsync(int projectId)
+    {
+        var entities = await repo.GetByProjectIdAsync(projectId);
+        return entities.Select(ToDto);
     }
 
     public async Task<int> CreateAsync(CategoryDto dto)
     {
-        var entity = new CategoryEntity { Name = dto.Name, ProjectId = dto.ProjectId, IsActive = true, CreatedDate = DateTime.UtcNow };
-        await _repository.AddAsync(entity);
-        await _unitOfWork.SaveChangesAsync();
+        var entity = ToEntity(dto);
+        await repo.AddAsync(entity);
+        await uow.SaveChangesAsync();
         return entity.Id;
     }
 
     public async Task UpdateAsync(CategoryDto dto)
     {
-        var entity = await _repository.GetByIdAsync(dto.Id)
-            ?? throw new InvalidOperationException($"Category with ID {dto.Id} not found.");
+        var entity = await repo.GetByIdAsync(dto.Id)
+            ?? throw new InvalidOperationException($"Category {dto.Id} not found.");
         entity.Name = dto.Name;
         entity.ProjectId = dto.ProjectId;
-        entity.IsActive = dto.IsActive;
         entity.ModifiedDate = DateTime.UtcNow;
-        await _repository.UpdateAsync(entity);
-        await _unitOfWork.SaveChangesAsync();
+        await repo.UpdateAsync(entity);
+        await uow.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(int id)
     {
-        await _repository.DeleteAsync(id);
-        await _unitOfWork.SaveChangesAsync();
+        await repo.DeleteAsync(id);
+        await uow.SaveChangesAsync();
     }
 
-    private static CategoryDto MapToDto(CategoryEntity e) => new()
-    {
-        Id = e.Id, Name = e.Name, ProjectId = e.ProjectId,
-        ProjectName = e.Project?.Name, IsActive = e.IsActive, CreatedDate = e.CreatedDate
-    };
+    private static CategoryDto ToDto(CategoryEntity e) => new() { Id = e.Id, Name = e.Name, ProjectId = e.ProjectId };
+    private static CategoryEntity ToEntity(CategoryDto d) => new() { Name = d.Name, ProjectId = d.ProjectId };
 }
