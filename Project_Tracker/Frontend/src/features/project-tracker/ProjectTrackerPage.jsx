@@ -79,7 +79,7 @@ const ProjectTrackerPage = () => {
                             className="flex items-center gap-2 px-4 py-2 border border-blue-200 rounded text-sm font-medium text-cyan-500 hover:bg-blue-50 transition-colors"
                         >
                             <BarChart2 className="w-4 h-4 text-[#3ebf8f]" />
-                            Go to Analytics
+                            Go to Analyticssss
                         </button>
                     </div>
                 </header>
