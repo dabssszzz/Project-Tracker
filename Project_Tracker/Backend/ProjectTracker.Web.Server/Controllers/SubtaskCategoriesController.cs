@@ -17,6 +17,7 @@ public class SubtaskCategoriesController(ISubtaskCategoryService service, ILogge
     }
 
     [HttpGet("subtask/{subtaskId:int}")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<IActionResult> GetBySubtask(int subtaskId)
     {
         try { return Success(await service.GetBySubtaskAsync(subtaskId)); }

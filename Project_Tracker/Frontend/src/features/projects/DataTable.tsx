@@ -30,22 +30,33 @@ export function DataTable() {
   if (isLoading) return <div className="p-8 text-center text-gray-500">Loading tasks...</div>;
   if (error) return <div className="p-8 text-center text-red-600">Error loading tasks.</div>;
 
-  const displayTasks = (tasks as any)?.map((t: any) => ({
-    id: t.taskCode || `ST-${String(t.id).padStart(3, '0')}`,
-    project: t.projectName || '-',
-    category: t.categoryName || '-',
-    mainTask: t.mainTaskName || '-',
-    subTask: t.name || '-',
-    details: t.details || '-',
-    status: t.status as ProjectStatus,
-    assignee: {
-      name: t.assigneeName || '-',
-      avatar: t.assigneeName ? `https://api.dicebear.com/7.x/avataaars/svg?seed=${t.assigneeName}` : undefined,
-      initials: t.assigneeName ? t.assigneeName.split(' ').map((n: string) => n[0]).join('') : '?',
-    },
-    created: t.createdDate ? new Date(t.createdDate).toLocaleDateString() : '-',
-    completed: t.status === 'Done/Published' && t.modifiedDate ? new Date(t.modifiedDate).toLocaleDateString() : '-',
-  })) || [];
+  const displayTasks = (tasks as any)?.map((t: any) => {
+    let formattedId = `ST-${String(t.id).padStart(3, '0')}`;
+    if (t.date_Create) {
+      const d = new Date(t.date_Create);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      formattedId = `${year}${month}${day}-${String(t.id).padStart(5, '0')}`;
+    }
+
+    return {
+      id: formattedId,
+      project: t.projectName || '-',
+      category: t.categoryName || '-',
+      mainTask: t.maintaskName || '-',
+      subTask: t.subtaskName || '-',
+      details: t.details || '-',
+      status: (t.statusName || 'Draft') as ProjectStatus,
+      assignee: {
+        name: t.assigneeName || '-',
+        avatar: t.assigneeName ? `https://api.dicebear.com/7.x/avataaars/svg?seed=${t.assigneeName}` : undefined,
+        initials: t.assigneeName ? t.assigneeName.split(' ').map((n: string) => n[0]).join('') : '?',
+      },
+      created: t.date_Create ? new Date(t.date_Create).toLocaleDateString() : '-',
+      completed: t.date_Completed ? new Date(t.date_Completed).toLocaleDateString() : '-',
+    };
+  }) || [];
 
   return (
     <>

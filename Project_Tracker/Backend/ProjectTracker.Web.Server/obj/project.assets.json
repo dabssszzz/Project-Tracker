@@ -5144,11 +5144,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Learjay.Encina\\Documents\\Project-Tracker\\Project_Tracker_v2\\Project_Tracker\\Backend\\ProjectTracker.Web.Server\\ProjectTracker.Web.Server.csproj",
+      "projectUniqueName": "C:\\Users\\Learjay.Encina\\Documents\\Project Tracker\\Project_Tracker\\Backend\\ProjectTracker.Web.Server\\ProjectTracker.Web.Server.csproj",
       "projectName": "ProjectTracker.Web.Server",
-      "projectPath": "C:\\Users\\Learjay.Encina\\Documents\\Project-Tracker\\Project_Tracker_v2\\Project_Tracker\\Backend\\ProjectTracker.Web.Server\\ProjectTracker.Web.Server.csproj",
+      "projectPath": "C:\\Users\\Learjay.Encina\\Documents\\Project Tracker\\Project_Tracker\\Backend\\ProjectTracker.Web.Server\\ProjectTracker.Web.Server.csproj",
       "packagesPath": "C:\\Users\\Learjay.Encina\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Learjay.Encina\\Documents\\Project-Tracker\\Project_Tracker_v2\\Project_Tracker\\Backend\\ProjectTracker.Web.Server\\obj\\",
+      "outputPath": "C:\\Users\\Learjay.Encina\\Documents\\Project Tracker\\Project_Tracker\\Backend\\ProjectTracker.Web.Server\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

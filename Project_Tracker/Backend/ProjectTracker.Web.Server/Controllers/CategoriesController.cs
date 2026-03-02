@@ -28,6 +28,7 @@ public class CategoriesController(ICategoryService service, ILogger<CategoriesCo
     }
 
     [HttpGet("project/{projectId:int}")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<IActionResult> GetByProject(int projectId)
     {
         try { return Success(await service.GetByProjectAsync(projectId)); }

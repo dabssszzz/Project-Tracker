@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ProjectTracker.Web.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2bfe31d7223b197721cbb4ed2a922a93ab2f47b8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8c2921ec3a840af46c5d73fc2daa5eea168e2459")]
 [assembly: System.Reflection.AssemblyProductAttribute("ProjectTracker.Web.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ProjectTracker.Web.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
