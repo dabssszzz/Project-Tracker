@@ -28,6 +28,7 @@ public class SubtasksController(ISubtaskService service, ILogger<SubtasksControl
     }
 
     [HttpGet("maintask/{mainTaskId:int}")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<IActionResult> GetByMainTask(int mainTaskId)
     {
         try { return Success(await service.GetByMainTaskAsync(mainTaskId)); }

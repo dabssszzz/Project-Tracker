@@ -28,6 +28,7 @@ public class MainTasksController(IMainTaskService service, ILogger<MainTasksCont
     }
 
     [HttpGet("category/{categoryId:int}")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<IActionResult> GetByCategory(int categoryId)
     {
         try { return Success(await service.GetByCategoryAsync(categoryId)); }

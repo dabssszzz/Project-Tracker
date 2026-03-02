@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "poVD59jsWgo=",
+  "dgSpecHash": "REB457nX+zs=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Learjay.Encina\\Documents\\Project-Tracker\\Project_Tracker_v2\\Project_Tracker\\Backend\\ProjectTracker.Web.Server\\ProjectTracker.Web.Server.csproj",
+  "projectFilePath": "C:\\Users\\Learjay.Encina\\Documents\\Project Tracker\\Project_Tracker\\Backend\\ProjectTracker.Web.Server\\ProjectTracker.Web.Server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Learjay.Encina\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Learjay.Encina\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
