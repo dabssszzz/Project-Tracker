@@ -8,7 +8,7 @@ import {
 } from '../../../shared/ui/select';
 import { Calendar } from '../../../shared/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '../../../shared/ui/popover';
-import { CalendarIcon, X, Filter } from 'lucide-react';
+import { CalendarIcon, X, Filter, ChevronDown, ChevronUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState } from 'react';
 import {
@@ -52,6 +52,7 @@ export function AnalyticsFilterSection({
     onReset,
 }: AnalyticsFilterSectionProps) {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(true);
 
     const FilterContent = () => (
         <div className="flex flex-col gap-6">
@@ -210,15 +211,33 @@ export function AnalyticsFilterSection({
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <Filter className="h-5 w-5 text-gray-400" />
-                    <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
+                    <div className="p-1.5 bg-red-50 rounded-lg">
+                        <Filter className="h-4 w-4 text-[#E10600]" />
+                    </div>
+                    <h2 className="text-sm font-bold text-gray-900 uppercase tracking-widest">
                         Data Filters
                     </h2>
                 </div>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="text-gray-500 hover:text-gray-900 hidden lg:flex items-center gap-2"
+                >
+                    <span className="text-xs font-medium">{isExpanded ? 'Collapse' : 'Expand'}</span>
+                    {isExpanded ? (
+                        <ChevronUp className="h-4 w-4 transition-transform duration-200" />
+                    ) : (
+                        <ChevronDown className="h-4 w-4 transition-transform duration-200" />
+                    )}
+                </Button>
             </div>
 
             {/* Desktop View */}
-            <div className="hidden lg:block bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all hover:shadow-md">
+            <div
+                className={`hidden lg:block bg-white rounded-xl shadow-sm border border-gray-100 transition-all duration-300 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[800px] p-6 opacity-100 border-t' : 'max-h-0 p-0 opacity-0 border-none'
+                    } hover:shadow-md`}
+            >
                 <FilterContent />
             </div>
 

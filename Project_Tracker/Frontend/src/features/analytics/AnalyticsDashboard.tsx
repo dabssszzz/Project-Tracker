@@ -191,102 +191,40 @@ export function AnalyticsDashboard({ onBackToProjects }: AnalyticsDashboardProps
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F8F9FB' }}>
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="px-4 sm:px-6 py-4 sm:py-6 max-w-[1600px] mx-auto">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            {/* Left: Back button and Title */}
-            <div className="flex items-center gap-3 sm:gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onBackToProjects}
-                className="text-gray-600 hover:text-gray-900 transition-all hover:scale-110"
-                title="Back to projects"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <div>
-                <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
-                  Marketing Project Report
-                </h1>
-                <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                  Analytics and insights for your marketing projects
-                </p>
-              </div>
-            </div>
-
-            {/* Right: Date filters and Group By */}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              {/* Start Date */}
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="justify-start text-left font-normal bg-white min-w-[120px] sm:min-w-[140px] transition-all hover:border-gray-400 text-sm"
-                  >
-                    <Calendar className="mr-2 h-4 w-4" />
-                    <span className="truncate">{startDate ? format(startDate, 'MMM dd') : 'Start date'}</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <CalendarComponent
-                    mode="single"
-                    selected={startDate}
-                    onSelect={setStartDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-
-              <span className="text-gray-400 hidden sm:inline">—</span>
-
-              {/* End Date */}
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="justify-start text-left font-normal bg-white min-w-[120px] sm:min-w-[140px] transition-all hover:border-gray-400 text-sm"
-                  >
-                    <Calendar className="mr-2 h-4 w-4" />
-                    <span className="truncate">{endDate ? format(endDate, 'MMM dd') : 'End date'}</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <CalendarComponent
-                    mode="single"
-                    selected={endDate}
-                    onSelect={setEndDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-
-              {/* Group By Dropdown */}
-              <Select value={groupBy} onValueChange={setGroupBy}>
-                <SelectTrigger className="bg-white min-w-[120px] sm:min-w-[140px] text-sm">
-                  <SelectValue placeholder="Group by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="daily">Daily</SelectItem>
-                  <SelectItem value="weekly">Weekly</SelectItem>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+      {/* Main Content */}
+      <main className="px-4 sm:px-6 py-6 sm:py-8 max-w-[1600px] mx-auto min-h-screen">
+        {/* Breadcrumb Navigation & Top Actions */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <BreadcrumbNav
+            items={[
+              { label: 'Projects', onClick: onBackToProjects },
+              { label: 'Analytics' },
+            ]}
+          />
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 bg-white border-gray-200"
+              onClick={() => window.location.reload()}
+            >
+              <TrendingUp className="h-4 w-4 text-red-600" />
+              Refresh data
+            </Button>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <main className="px-4 sm:px-6 py-6 sm:py-8 max-w-[1600px] mx-auto">
-        {/* Breadcrumb Navigation */}
-        <BreadcrumbNav
-          items={[
-            { label: 'Projects', onClick: onBackToProjects },
-            { label: 'Analytics' },
-          ]}
-        />
+        {/* Page Header integrated into layout */}
+        <div className="mb-10 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              Marketing Project Report
+            </h1>
+            <p className="text-sm sm:text-base text-gray-500 mt-1">
+              Analytics and insights for your marketing projects
+            </p>
+          </div>
+        </div>
 
         <div className="space-y-6 sm:space-y-8">
           {/* Analytics Filters */}
